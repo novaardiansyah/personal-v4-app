@@ -21,7 +21,7 @@ import Svg, {
 
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
-import { BottomTabInset, Colors, MaxContentWidth, Spacing } from '@/constants/theme';
+import { BottomTabInset, Colors, Fonts, MaxContentWidth, Spacing } from '@/constants/theme';
 import { useTheme } from '@/hooks/use-theme';
 import { formatRupiah } from '@/utils/currency';
 
@@ -195,6 +195,7 @@ export default function HomeScreen() {
     {
       id: '1',
       title: 'Transfer ke Budi Santoso',
+      description: 'Transfer',
       date: '11 Sep 2026, 14:30',
       amount: formatRupiah(-150000),
       type: 'expense',
@@ -202,6 +203,7 @@ export default function HomeScreen() {
     {
       id: '2',
       title: 'Cashback Promo Kado',
+      description: 'Reward',
       date: '10 Sep 2026, 09:15',
       amount: formatRupiah(25000, { showSign: true }),
       type: 'income',
@@ -209,6 +211,7 @@ export default function HomeScreen() {
     {
       id: '3',
       title: 'Top Up Saldo E-Wallet',
+      description: 'Top Up',
       date: '10 Sep 2026, 08:00',
       amount: formatRupiah(-50000),
       type: 'expense',
@@ -217,7 +220,7 @@ export default function HomeScreen() {
 
   return (
     <ThemedView style={styles.container}>
-      <SafeAreaView style={styles.safeArea}>
+      <SafeAreaView edges={['top', 'left', 'right']} style={styles.safeArea}>
         <ScrollView
           showsVerticalScrollIndicator={false}
           contentContainerStyle={styles.scrollContent}>
@@ -353,51 +356,74 @@ export default function HomeScreen() {
             ))}
           </View>
 
-          {/* ─── 5. RECENT ACTIVITY SECTION ───────────────────── */}
-          <View style={styles.activitySection}>
-            <View style={styles.activityHeader}>
-              <ThemedText style={styles.sectionTitle}>Aktivitas Terkini</ThemedText>
-              <Pressable>
-                <ThemedText style={styles.viewAllText} themeColor="primary">
-                  Lihat Semua
-                </ThemedText>
-              </Pressable>
-            </View>
+          {/* ─── 5. RECENT ACTIVITY CARD (CARD KETIGA) ───────── */}
+          <View style={styles.transactionListCard}>
+            {/* Card Header inside Card with Chevron > */}
+            <Pressable
+              style={({ pressed }) => [styles.activityCardHeader, pressed && styles.pressed]}>
+              <ThemedText style={styles.activityCardTitle}>Aktivitas Terkini</ThemedText>
+              <ChevronRightIcon size={14} color={theme.textSecondary} />
+            </Pressable>
 
-            <View style={styles.transactionListCard}>
-              {recentTransactions.map((tx, idx) => (
-                <View key={tx.id}>
-                  <View style={styles.transactionRow}>
-                    <View style={styles.txLeft}>
+            <View
+              style={[
+                styles.transactionDivider,
+                { backgroundColor: theme.backgroundSelected },
+              ]}
+            />
+
+            {/* Transaction Items */}
+            {recentTransactions.map((tx, idx) => (
+              <View key={tx.id}>
+                <View style={styles.transactionRow}>
+                  <View style={styles.txLeft}>
+                    <View style={styles.txHeaderGroup}>
                       <ThemedText style={styles.txTitle}>{tx.title}</ThemedText>
                       <ThemedText style={styles.txSubtitle} themeColor="textSecondary">
-                        {tx.date}
+                        {tx.description}
                       </ThemedText>
                     </View>
-                    <View style={styles.txRight}>
-                      <Text
-                        style={[
-                          styles.txAmount,
-                          {
-                            color:
-                              tx.type === 'income' ? '#22C55E' : theme.text,
-                          },
-                        ]}>
-                        {tx.amount}
-                      </Text>
-                    </View>
+                    <ThemedText style={styles.txDate} themeColor="textSecondary">
+                      {tx.date}
+                    </ThemedText>
                   </View>
-                  {idx < recentTransactions.length - 1 && (
-                    <View
+                  <View style={styles.txRight}>
+                    <Text
                       style={[
-                        styles.transactionDivider,
-                        { backgroundColor: theme.backgroundSelected },
-                      ]}
-                    />
-                  )}
+                        styles.txAmount,
+                        {
+                          color:
+                            tx.type === 'income' ? '#22C55E' : theme.text,
+                        },
+                      ]}>
+                      {tx.amount}
+                    </Text>
+                  </View>
                 </View>
-              ))}
-            </View>
+                {idx < recentTransactions.length - 1 && (
+                  <View
+                    style={[
+                      styles.transactionDivider,
+                      { backgroundColor: theme.backgroundSelected },
+                    ]}
+                  />
+                )}
+              </View>
+            ))}
+
+            {/* Card Footer inside Card */}
+            <View
+              style={[
+                styles.transactionDivider,
+                { backgroundColor: theme.backgroundSelected },
+              ]}
+            />
+            <Pressable
+              style={({ pressed }) => [styles.activityCardFooter, pressed && styles.pressed]}>
+              <ThemedText style={styles.footerText} themeColor="primary">
+                Lihat Selengkapnya
+              </ThemedText>
+            </Pressable>
           </View>
         </ScrollView>
       </SafeAreaView>
@@ -502,25 +528,25 @@ const styles = StyleSheet.create({
   /* ── Balance Card ──────────────────────────────────────── */
   balanceCardWrapper: {
     marginBottom: Spacing.four,
-    borderRadius: 24,
+    borderRadius: 16,
     backgroundColor: '#E76006',
     ...Platform.select({
       ios: {
         shadowColor: '#E76006',
-        shadowOffset: { width: 0, height: 6 },
-        shadowOpacity: 0.25,
-        shadowRadius: 10,
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.08,
+        shadowRadius: 6,
       },
       android: {
-        elevation: 4,
+        elevation: 1,
       },
       web: {
-        boxShadow: '0 6px 20px rgba(231, 96, 6, 0.22)',
+        boxShadow: '0 2px 8px rgba(231, 96, 6, 0.08)',
       },
     }),
   },
   balanceCard: {
-    borderRadius: 24,
+    borderRadius: 16,
     padding: Spacing.three + 2,
     overflow: 'hidden',
   },
@@ -535,6 +561,7 @@ const styles = StyleSheet.create({
     gap: 6,
   },
   totalSaldoLabel: {
+    fontFamily: Fonts.sans,
     color: '#ffffff',
     fontSize: 13,
     fontWeight: '500',
@@ -550,6 +577,7 @@ const styles = StyleSheet.create({
     borderRadius: 14,
   },
   historyPillText: {
+    fontFamily: Fonts.sans,
     color: '#ffffff',
     fontSize: 11,
     fontWeight: '600',
@@ -559,10 +587,12 @@ const styles = StyleSheet.create({
     marginBottom: Spacing.two,
   },
   mainBalanceText: {
+    fontFamily: Fonts.sans,
     color: '#ffffff',
     fontSize: 30,
     fontWeight: '700',
     letterSpacing: 0.5,
+    fontVariant: ['tabular-nums'],
   },
   cardDivider: {
     height: 1,
@@ -597,15 +627,18 @@ const styles = StyleSheet.create({
     marginBottom: 2,
   },
   subTitleText: {
+    fontFamily: Fonts.sans,
     color: '#ffffff',
     fontSize: 12,
     fontWeight: '700',
   },
   subAmountText: {
+    fontFamily: Fonts.sans,
     color: '#ffffff',
     fontSize: 15,
     fontWeight: '700',
     marginVertical: 2,
+    fontVariant: ['tabular-nums'],
   },
 
   /* ── Quick Actions (Card Kedua) ────────────────────────── */
@@ -616,22 +649,22 @@ const styles = StyleSheet.create({
     backgroundColor: '#FFFFFF',
     paddingVertical: Spacing.two + 4,
     paddingHorizontal: Spacing.one,
-    borderRadius: 20,
+    borderRadius: 14,
     marginBottom: Spacing.four,
     borderWidth: 1,
-    borderColor: '#F0F1F5',
+    borderColor: '#ECEEF2',
     ...Platform.select({
       ios: {
         shadowColor: '#000000',
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.03,
-        shadowRadius: 6,
+        shadowOffset: { width: 0, height: 1 },
+        shadowOpacity: 0.005,
+        shadowRadius: 2,
       },
       android: {
-        elevation: 1,
+        elevation: 0,
       },
       web: {
-        boxShadow: '0 2px 8px rgba(0, 0, 0, 0.03)',
+        boxShadow: 'none',
       },
     }),
   },
@@ -644,12 +677,13 @@ const styles = StyleSheet.create({
   quickActionIconWrapper: {
     width: 44,
     height: 44,
-    borderRadius: 14,
+    borderRadius: 12,
     backgroundColor: '#FFF7F2',
     alignItems: 'center',
     justifyContent: 'center',
   },
   quickActionText: {
+    fontFamily: Fonts.sans,
     fontSize: 11.5,
     fontWeight: '600',
     color: '#242424',
@@ -658,72 +692,90 @@ const styles = StyleSheet.create({
   },
 
   /* ── Recent Activity (Card Ketiga) ─────────────────────── */
-  activitySection: {
-    gap: Spacing.two,
-  },
-  activityHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingHorizontal: Spacing.one,
-  },
-  sectionTitle: {
-    fontSize: 16,
-    fontWeight: '700',
-  },
-  viewAllText: {
-    fontSize: 13,
-    fontWeight: '600',
-  },
   transactionListCard: {
-    borderRadius: 20,
+    borderRadius: 14,
     backgroundColor: '#FFFFFF',
-    paddingVertical: Spacing.two,
     paddingHorizontal: Spacing.three,
     borderWidth: 1,
-    borderColor: '#F0F1F5',
+    borderColor: '#ECEEF2',
     ...Platform.select({
       ios: {
         shadowColor: '#000000',
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.03,
-        shadowRadius: 6,
+        shadowOffset: { width: 0, height: 1 },
+        shadowOpacity: 0.005,
+        shadowRadius: 2,
       },
       android: {
-        elevation: 1,
+        elevation: 0,
       },
       web: {
-        boxShadow: '0 2px 8px rgba(0, 0, 0, 0.03)',
+        boxShadow: 'none',
       },
     }),
+  },
+  activityCardHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingVertical: Spacing.three - 2,
+  },
+  activityCardTitle: {
+    fontFamily: Fonts.sans,
+    fontSize: 15,
+    fontWeight: '700',
   },
   transactionRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingVertical: Spacing.two,
+    paddingVertical: 14,
   },
   txLeft: {
-    gap: 2,
+    gap: 8,
+  },
+  txHeaderGroup: {
+    gap: 1,
   },
   txTitle: {
+    fontFamily: Fonts.sans,
     fontSize: 13,
     fontWeight: '600',
+    lineHeight: 16,
   },
   txSubtitle: {
-    fontSize: 11,
+    fontFamily: Fonts.sans,
+    fontSize: 11.5,
+    lineHeight: 14,
+  },
+  txDate: {
+    fontFamily: Fonts.sans,
+    fontSize: 10.5,
+    lineHeight: 13,
+    opacity: 0.85,
   },
   txRight: {
     alignItems: 'flex-end',
     gap: 2,
   },
   txAmount: {
+    fontFamily: Fonts.sans,
     fontSize: 13,
     fontWeight: '700',
+    fontVariant: ['tabular-nums'],
   },
   transactionDivider: {
     height: 1,
     backgroundColor: '#F0F1F5',
+  },
+  activityCardFooter: {
+    paddingVertical: Spacing.three - 2,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  footerText: {
+    fontFamily: Fonts.sans,
+    fontSize: 13,
+    fontWeight: '600',
   },
 });
 
