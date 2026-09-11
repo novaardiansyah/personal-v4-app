@@ -1,6 +1,6 @@
-import { DarkTheme, DefaultTheme, ThemeProvider } from 'expo-router';
+import { DefaultTheme, ThemeProvider } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
-import { useColorScheme } from 'react-native';
+import { StatusBar } from 'expo-status-bar';
 
 import { AnimatedSplashOverlay } from '@/components/animated-icon';
 import AppTabs from '@/components/app-tabs';
@@ -11,14 +11,13 @@ import '@/global.css';
 SplashScreen.preventAutoHideAsync().catch(() => { });
 
 export default function TabLayout() {
-  const colorScheme = useColorScheme();
   return (
-    <GluestackUIProvider mode={colorScheme === 'dark' ? 'dark' : 'light'}>
-      <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
+    <GluestackUIProvider mode="light">
+      <ThemeProvider value={DefaultTheme}>
+        <StatusBar style="dark" />
         <AnimatedSplashOverlay />
         <AppTabs />
       </ThemeProvider>
     </GluestackUIProvider>
-
   );
 }
