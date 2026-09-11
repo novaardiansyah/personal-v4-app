@@ -40,7 +40,9 @@
           "style": "dark",
           "backgroundColor": "#ffffff"
         }
-      ]
+      ],
+      "expo-image",
+      "expo-web-browser"
     ],
     "experiments": {
       "typedRoutes": true,
