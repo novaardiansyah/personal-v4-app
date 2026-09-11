@@ -13,8 +13,7 @@ SplashScreen.preventAutoHideAsync().catch(() => { });
 export default function TabLayout() {
   const colorScheme = useColorScheme();
   return (
-
-    <GluestackUIProvider mode="dark">
+    <GluestackUIProvider mode={colorScheme === 'dark' ? 'dark' : 'light'}>
       <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
         <AnimatedSplashOverlay />
         <AppTabs />
