@@ -150,6 +150,7 @@ export default function AppTabs() {
 
   return (
     <Tabs
+      initialRouteName="login"
       screenOptions={{
         headerShown: false,
         tabBarActiveTintColor: Colors.light.primary,
@@ -164,6 +165,21 @@ export default function AppTabs() {
         tabBarItemStyle: styles.tabBarItem,
         tabBarLabelStyle: styles.tabBarLabel,
       }}>
+      {/* Auth screens (hidden from tab bar) */}
+      <Tabs.Screen
+        name="login"
+        options={{
+          href: null,
+          tabBarStyle: { display: 'none' },
+        }}
+      />
+      <Tabs.Screen
+        name="register"
+        options={{
+          href: null,
+          tabBarStyle: { display: 'none' },
+        }}
+      />
       <Tabs.Screen
         name="index"
         options={{

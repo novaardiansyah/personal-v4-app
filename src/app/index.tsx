@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Alert,
   Platform,
@@ -10,6 +10,7 @@ import {
   View,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { useRouter } from 'expo-router';
 import Svg, {
   Circle,
   Defs,
@@ -22,6 +23,7 @@ import Svg, {
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { BottomTabInset, Colors, Fonts, MaxContentWidth, Spacing } from '@/constants/theme';
+import { useAuth } from '@/context/auth-context';
 import { useTheme } from '@/hooks/use-theme';
 import { formatRupiah } from '@/utils/currency';
 
@@ -167,8 +169,20 @@ function MoreGridIcon({ size = 20, color = '#E76006' }: { size?: number; color?:
 }
 
 export default function HomeScreen() {
+  const router = useRouter();
+  const { user, isAuthenticated } = useAuth();
   const theme = useTheme();
   const [isBalanceVisible, setIsBalanceVisible] = useState(true);
+
+  useEffect(() => {
+    if (!isAuthenticated) {
+      router.replace('/login');
+    }
+  }, [isAuthenticated, router]);
+
+  if (!isAuthenticated) {
+    return null;
+  }
 
   const accountNumber = '1234 5678 9012';
 
@@ -229,10 +243,12 @@ export default function HomeScreen() {
             {/* User Profile Info */}
             <View style={styles.profileSection}>
               <View style={styles.avatar}>
-                <ThemedText style={styles.avatarText}>NA</ThemedText>
+                <ThemedText style={styles.avatarText}>
+                  {user?.name ? user.name.slice(0, 2).toUpperCase() : 'NA'}
+                </ThemedText>
               </View>
               <View style={styles.profileTextContainer}>
-                <ThemedText style={styles.userName}>Nova Ardiansyah</ThemedText>
+                <ThemedText style={styles.userName}>{user?.name || 'Nova Ardiansyah'}</ThemedText>
                 <Pressable
                   onPress={handleCopyAccount}
                   style={({ pressed }) => [styles.accountRow, pressed && styles.pressed]}>

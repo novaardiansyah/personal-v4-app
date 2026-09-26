@@ -43,4 +43,11 @@ example
 /android
 personal-v4-app.code-workspace
 /obsidian
+/api
 AGENTS.md
+
+.env
+.env.local
+.env.production
+.env.staging
+
