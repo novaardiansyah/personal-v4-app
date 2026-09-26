@@ -2,7 +2,7 @@
   "expo": {
     "name": "Nova Ardiansyah",
     "slug": "personal-v4",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "scheme": "personalv4",
@@ -18,7 +18,10 @@
         "monochromeImage": "./assets/images/android-icon-monochrome.png"
       },
       "predictiveBackGestureEnabled": false,
-      "package": "com.novaardiansyah.personalv4"
+      "package": "com.novaardiansyah.personalv4",
+      "permissions": [
+        "android.permission.RECORD_AUDIO"
+      ]
     },
     "web": {
       "output": "static",
@@ -57,8 +60,11 @@
     },
     "extra": {
       "router": {},
+      "expo-status-bar": {
+        "style": "dark"
+      },
       "eas": {
-        "projectId": "c6cffe49-5a60-4ca2-99f1-043431d4c8d4"
+        "projectId": "5818a72b-48fe-455f-9e02-3d2e615b9d6d"
       }
     },
     "owner": "novaardiansyah"

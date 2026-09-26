@@ -52,10 +52,10 @@ const menuItems: MenuItem[] = [
   {
     id: 'version',
     title: 'Versi Aplikasi',
-    subtitle: 'Versi aplikasi yang terpasang saat ini',
+    subtitle: 'Versi yang terpasang saat ini',
     icon: InfoIcon,
     type: 'info',
-    value: 'v1.0.0',
+    value: 'v1.0.1',
   },
 ];
 

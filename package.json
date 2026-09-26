@@ -1,7 +1,7 @@
 {
   "name": "personal-v4",
   "main": "expo-router/entry",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "dependencies": {
     "@expo/html-elements": "^0.12.5",
     "@expo/ui": "~57.0.20",
@@ -57,7 +57,10 @@
     "web": "expo start --web",
     "lint": "expo lint",
     "build:apk-debug": "cd android && gradlew assembleDebug",
-    "build:apk-release": "cd android && gradlew assembleRelease"
+    "build:apk-release": "cd android && gradlew assembleRelease",
+    "eas-build:apk-debug": "npx eas-cli build --platform android --profile development",
+    "eas-build:apk-local": "npx eas-cli build --platform android --profile preview --local",
+    "eas-build:apk-production": "npx eas-cli build --platform android --profile production"
   },
   "private": true,
   "overrides": {
