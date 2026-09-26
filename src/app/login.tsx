@@ -16,12 +16,21 @@ import Svg, { Circle, Path, Rect } from 'react-native-svg';
 
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
-import { Colors, Fonts, MaxContentWidth, Spacing } from '@/constants/theme';
+import {
+  BorderRadius,
+  CommonStyles,
+  FontSize,
+  FontWeight,
+  Fonts,
+  Palette,
+  Shadows,
+  Spacing,
+} from '@/constants/theme';
 import { useAuth } from '@/context/auth-context';
 import { loginMobileApi } from '@/services/api';
 
 // --- Vector Icons ---
-function MailIcon({ color = '#575757', size = 20 }: { color?: string; size?: number }) {
+function MailIcon({ color = Palette.secondary, size = 20 }: { color?: string; size?: number }) {
   return (
     <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
       <Rect x="2" y="4" width="20" height="16" rx="2" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
@@ -30,7 +39,7 @@ function MailIcon({ color = '#575757', size = 20 }: { color?: string; size?: num
   );
 }
 
-function LockIcon({ color = '#575757', size = 20 }: { color?: string; size?: number }) {
+function LockIcon({ color = Palette.secondary, size = 20 }: { color?: string; size?: number }) {
   return (
     <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
       <Rect x="3" y="11" width="18" height="11" rx="2" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
@@ -39,7 +48,7 @@ function LockIcon({ color = '#575757', size = 20 }: { color?: string; size?: num
   );
 }
 
-function EyeIcon({ visible, color = '#575757', size = 20 }: { visible: boolean; color?: string; size?: number }) {
+function EyeIcon({ visible, color = Palette.secondary, size = 20 }: { visible: boolean; color?: string; size?: number }) {
   if (visible) {
     return (
       <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
@@ -56,7 +65,7 @@ function EyeIcon({ visible, color = '#575757', size = 20 }: { visible: boolean; 
   );
 }
 
-function CheckIcon({ color = '#FFFFFF', size = 12 }: { color?: string; size?: number }) {
+function CheckIcon({ color = Palette.white, size = 12 }: { color?: string; size?: number }) {
   return (
     <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
       <Path d="M20 6L9 17L4 12" stroke={color} strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
@@ -146,8 +155,8 @@ export default function LoginScreen() {
   };
 
   return (
-    <ThemedView style={styles.container}>
-      <SafeAreaView edges={['top', 'left', 'right', 'bottom']} style={styles.safeArea}>
+    <ThemedView style={CommonStyles.screenContainer}>
+      <SafeAreaView edges={['top', 'left', 'right', 'bottom']} style={CommonStyles.safeArea}>
         <KeyboardAvoidingView
           behavior={Platform.OS === 'ios' ? 'padding' : undefined}
           style={styles.keyboardAvoid}>
@@ -174,20 +183,20 @@ export default function LoginScreen() {
             <View style={styles.form}>
               {/* Email Input */}
               <View style={styles.inputGroup}>
-                <ThemedText style={styles.inputLabel}>Email</ThemedText>
+                <ThemedText style={CommonStyles.inputLabel}>Email</ThemedText>
                 <View
                   style={[
-                    styles.inputContainer,
-                    emailFocused && styles.inputContainerFocused,
-                    Boolean(fieldErrors.email) && styles.inputContainerError,
+                    CommonStyles.inputContainer,
+                    emailFocused && CommonStyles.inputContainerFocused,
+                    Boolean(fieldErrors.email) && CommonStyles.inputContainerError,
                   ]}>
                   <View style={styles.inputIcon}>
-                    <MailIcon color={fieldErrors.email ? '#EF4444' : emailFocused ? Colors.light.primary : '#575757'} />
+                    <MailIcon color={fieldErrors.email ? Palette.danger : emailFocused ? Palette.primary : Palette.secondary} />
                   </View>
                   <TextInput
                     style={styles.textInput}
                     placeholder="nama@email.com"
-                    placeholderTextColor="#9AA0A6"
+                    placeholderTextColor={Palette.textMuted}
                     value={email}
                     onChangeText={(text) => {
                       setEmail(text);
@@ -202,26 +211,26 @@ export default function LoginScreen() {
                   />
                 </View>
                 {fieldErrors.email ? (
-                  <ThemedText style={styles.fieldErrorText}>{fieldErrors.email}</ThemedText>
+                  <ThemedText style={CommonStyles.fieldErrorText}>{fieldErrors.email}</ThemedText>
                 ) : null}
               </View>
 
               {/* Password Input */}
               <View style={styles.inputGroup}>
-                <ThemedText style={styles.inputLabel}>Kata Sandi</ThemedText>
+                <ThemedText style={CommonStyles.inputLabel}>Kata Sandi</ThemedText>
                 <View
                   style={[
-                    styles.inputContainer,
-                    passwordFocused && styles.inputContainerFocused,
-                    Boolean(fieldErrors.password) && styles.inputContainerError,
+                    CommonStyles.inputContainer,
+                    passwordFocused && CommonStyles.inputContainerFocused,
+                    Boolean(fieldErrors.password) && CommonStyles.inputContainerError,
                   ]}>
                   <View style={styles.inputIcon}>
-                    <LockIcon color={fieldErrors.password ? '#EF4444' : passwordFocused ? Colors.light.primary : '#575757'} />
+                    <LockIcon color={fieldErrors.password ? Palette.danger : passwordFocused ? Palette.primary : Palette.secondary} />
                   </View>
                   <TextInput
                     style={styles.textInput}
                     placeholder="Masukkan kata sandi"
-                    placeholderTextColor="#9AA0A6"
+                    placeholderTextColor={Palette.textMuted}
                     value={password}
                     onChangeText={(text) => {
                       setPassword(text);
@@ -237,17 +246,16 @@ export default function LoginScreen() {
                     onPress={() => setShowPassword(!showPassword)}
                     style={styles.eyeButton}
                     hitSlop={8}>
-                    <EyeIcon visible={showPassword} color="#575757" />
+                    <EyeIcon visible={showPassword} color={Palette.secondary} />
                   </Pressable>
                 </View>
                 {fieldErrors.password ? (
-                  <ThemedText style={styles.fieldErrorText}>{fieldErrors.password}</ThemedText>
+                  <ThemedText style={CommonStyles.fieldErrorText}>{fieldErrors.password}</ThemedText>
                 ) : null}
               </View>
 
-
               {/* Remember Me & Forgot Password */}
-              <View style={styles.rowBetween}>
+              <View style={CommonStyles.rowBetween}>
                 <Pressable
                   style={styles.checkboxRow}
                   onPress={() => setRememberMe(!rememberMe)}>
@@ -271,16 +279,16 @@ export default function LoginScreen() {
               {/* Login Button */}
               <Pressable
                 style={({ pressed }) => [
-                  styles.loginButton,
-                  pressed && styles.loginButtonPressed,
-                  isLoading && styles.loginButtonDisabled,
+                  CommonStyles.buttonPrimary,
+                  pressed && CommonStyles.buttonPrimaryPressed,
+                  isLoading && CommonStyles.buttonPrimaryDisabled,
                 ]}
                 onPress={handleLogin}
                 disabled={isLoading}>
                 {isLoading ? (
-                  <ActivityIndicator color="#FFFFFF" size="small" />
+                  <ActivityIndicator color={Palette.white} size="small" />
                 ) : (
-                  <Text style={styles.loginButtonText}>Masuk</Text>
+                  <Text style={CommonStyles.buttonPrimaryText}>Masuk</Text>
                 )}
               </Pressable>
             </View>
@@ -302,16 +310,6 @@ export default function LoginScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#F8F9FA',
-    flexDirection: 'row',
-    justifyContent: 'center',
-  },
-  safeArea: {
-    flex: 1,
-    maxWidth: MaxContentWidth,
-  },
   keyboardAvoid: {
     flex: 1,
   },
@@ -327,92 +325,47 @@ const styles = StyleSheet.create({
   },
   title: {
     fontFamily: Fonts.sans,
-    fontSize: 26,
+    fontSize: FontSize['3xl'],
     lineHeight: 34,
-    fontWeight: '700',
-    color: '#242424',
+    fontWeight: FontWeight.bold,
+    color: Palette.dark,
     textAlign: 'center',
     marginBottom: 6,
     paddingBottom: 2,
   },
   subtitle: {
     fontFamily: Fonts.sans,
-    fontSize: 14,
+    fontSize: FontSize.base,
     textAlign: 'center',
     lineHeight: 20,
     maxWidth: 340,
   },
   errorBanner: {
-    backgroundColor: '#FEE2E2',
-    borderColor: '#FCA5A5',
+    backgroundColor: Palette.dangerBg,
+    borderColor: Palette.dangerBorder,
     borderWidth: 1,
-    borderRadius: 10,
+    borderRadius: BorderRadius.md,
     paddingHorizontal: 14,
     paddingVertical: 10,
     marginBottom: Spacing.three,
   },
   errorText: {
     fontFamily: Fonts.sans,
-    fontSize: 13,
-    color: '#DC2626',
-    fontWeight: '500',
+    fontSize: FontSize.sm + 1,
+    color: Palette.dangerDark,
+    fontWeight: FontWeight.medium,
   },
   form: {
-    backgroundColor: '#FFFFFF',
-    borderRadius: 18,
+    backgroundColor: Palette.card,
+    borderRadius: BorderRadius['2xl'],
     padding: Spacing.four,
     borderWidth: 1,
-    borderColor: '#ECEEF2',
+    borderColor: Palette.border,
     gap: 16,
-    ...Platform.select({
-      ios: {
-        shadowColor: '#000000',
-        shadowOffset: { width: 0, height: 6 },
-        shadowOpacity: 0.04,
-        shadowRadius: 12,
-      },
-      android: {
-        elevation: 2,
-      },
-      web: {
-        boxShadow: '0 6px 20px rgba(0, 0, 0, 0.04)',
-      },
-    }),
+    ...Shadows.lg,
   },
   inputGroup: {
     gap: 6,
-  },
-  inputLabel: {
-    fontFamily: Fonts.sans,
-    fontSize: 13,
-    fontWeight: '600',
-    color: '#242424',
-  },
-  inputContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#F8F9FA',
-    borderWidth: 1.2,
-    borderColor: '#E2E8F0',
-    borderRadius: 12,
-    paddingHorizontal: 12,
-    height: 48,
-  },
-  inputContainerFocused: {
-    borderColor: Colors.light.primary,
-    backgroundColor: '#FFFFFF',
-  },
-  inputContainerError: {
-    borderColor: '#EF4444',
-    backgroundColor: '#FFF8F8',
-  },
-  fieldErrorText: {
-    fontFamily: Fonts.sans,
-    fontSize: 12,
-    color: '#EF4444',
-    marginTop: 4,
-    marginLeft: 2,
-    fontWeight: '500',
   },
   inputIcon: {
     marginRight: 10,
@@ -420,19 +373,13 @@ const styles = StyleSheet.create({
   textInput: {
     flex: 1,
     fontFamily: Fonts.sans,
-    fontSize: 14,
-    color: '#242424',
+    fontSize: FontSize.base,
+    color: Palette.dark,
     height: '100%',
     paddingVertical: 0,
   },
   eyeButton: {
     padding: 6,
-  },
-  rowBetween: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    marginTop: -4,
   },
   checkboxRow: {
     flexDirection: 'row',
@@ -442,45 +389,25 @@ const styles = StyleSheet.create({
   checkbox: {
     width: 18,
     height: 18,
-    borderRadius: 5,
+    borderRadius: BorderRadius.xs + 1,
     borderWidth: 1.5,
-    borderColor: '#9AA0A6',
+    borderColor: Palette.textMuted,
     alignItems: 'center',
     justifyContent: 'center',
   },
   checkboxActive: {
-    backgroundColor: Colors.light.primary,
-    borderColor: Colors.light.primary,
+    backgroundColor: Palette.primary,
+    borderColor: Palette.primary,
   },
   checkboxLabel: {
     fontFamily: Fonts.sans,
-    fontSize: 13,
+    fontSize: FontSize.sm + 1,
   },
   forgotPassword: {
     fontFamily: Fonts.sans,
-    fontSize: 13,
-    fontWeight: '600',
-    color: Colors.light.primary,
-  },
-  loginButton: {
-    backgroundColor: Colors.light.primary,
-    height: 48,
-    borderRadius: 12,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginTop: 4,
-  },
-  loginButtonPressed: {
-    opacity: 0.88,
-  },
-  loginButtonDisabled: {
-    backgroundColor: Colors.light.primaryDisabled,
-  },
-  loginButtonText: {
-    fontFamily: Fonts.sans,
-    fontSize: 15,
-    fontWeight: '700',
-    color: '#FFFFFF',
+    fontSize: FontSize.sm + 1,
+    fontWeight: FontWeight.semibold,
+    color: Palette.primary,
   },
   footer: {
     flexDirection: 'row',
@@ -490,12 +417,13 @@ const styles = StyleSheet.create({
   },
   footerText: {
     fontFamily: Fonts.sans,
-    fontSize: 14,
+    fontSize: FontSize.base,
   },
   registerLink: {
     fontFamily: Fonts.sans,
-    fontSize: 14,
-    fontWeight: '700',
-    color: Colors.light.primary,
+    fontSize: FontSize.base,
+    fontWeight: FontWeight.bold,
+    color: Palette.primary,
   },
 });
+

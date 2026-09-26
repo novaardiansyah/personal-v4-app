@@ -16,13 +16,22 @@ import Svg, { Circle, Path, Rect } from 'react-native-svg';
 
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
-import { Colors, Fonts, MaxContentWidth, Spacing } from '@/constants/theme';
+import {
+  BorderRadius,
+  CommonStyles,
+  FontSize,
+  FontWeight,
+  Fonts,
+  Palette,
+  Shadows,
+  Spacing,
+} from '@/constants/theme';
 import { useAuth } from '@/context/auth-context';
 import { registerMobileApi } from '@/services/api';
 
 // --- Vector Icons ---
 
-function UserIcon({ color = '#575757', size = 20 }: { color?: string; size?: number }) {
+function UserIcon({ color = Palette.secondary, size = 20 }: { color?: string; size?: number }) {
   return (
     <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
       <Path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
@@ -31,7 +40,7 @@ function UserIcon({ color = '#575757', size = 20 }: { color?: string; size?: num
   );
 }
 
-function MailIcon({ color = '#575757', size = 20 }: { color?: string; size?: number }) {
+function MailIcon({ color = Palette.secondary, size = 20 }: { color?: string; size?: number }) {
   return (
     <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
       <Rect x="2" y="4" width="20" height="16" rx="2" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
@@ -40,7 +49,7 @@ function MailIcon({ color = '#575757', size = 20 }: { color?: string; size?: num
   );
 }
 
-function LockIcon({ color = '#575757', size = 20 }: { color?: string; size?: number }) {
+function LockIcon({ color = Palette.secondary, size = 20 }: { color?: string; size?: number }) {
   return (
     <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
       <Rect x="3" y="11" width="18" height="11" rx="2" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
@@ -49,7 +58,7 @@ function LockIcon({ color = '#575757', size = 20 }: { color?: string; size?: num
   );
 }
 
-function EyeIcon({ visible, color = '#575757', size = 20 }: { visible: boolean; color?: string; size?: number }) {
+function EyeIcon({ visible, color = Palette.secondary, size = 20 }: { visible: boolean; color?: string; size?: number }) {
   if (visible) {
     return (
       <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
@@ -66,7 +75,7 @@ function EyeIcon({ visible, color = '#575757', size = 20 }: { visible: boolean; 
   );
 }
 
-function CheckIcon({ color = '#FFFFFF', size = 12 }: { color?: string; size?: number }) {
+function CheckIcon({ color = Palette.white, size = 12 }: { color?: string; size?: number }) {
   return (
     <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
       <Path d="M20 6L9 17L4 12" stroke={color} strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
@@ -133,14 +142,14 @@ export default function RegisterScreen() {
   const getStrengthColor = () => {
     switch (passwordStrength) {
       case 1:
-        return '#EF4444';
+        return Palette.danger;
       case 2:
-        return '#F59E0B';
+        return Palette.warning;
       case 3:
       case 4:
-        return '#10B981';
+        return Palette.successDark;
       default:
-        return '#ECEEF2';
+        return Palette.border;
     }
   };
 
@@ -238,8 +247,8 @@ export default function RegisterScreen() {
   };
 
   return (
-    <ThemedView style={styles.container}>
-      <SafeAreaView edges={['top', 'left', 'right', 'bottom']} style={styles.safeArea}>
+    <ThemedView style={CommonStyles.screenContainer}>
+      <SafeAreaView edges={['top', 'left', 'right', 'bottom']} style={CommonStyles.safeArea}>
         <KeyboardAvoidingView
           behavior={Platform.OS === 'ios' ? 'padding' : undefined}
           style={styles.keyboardAvoid}>
@@ -272,20 +281,20 @@ export default function RegisterScreen() {
             <View style={styles.form}>
               {/* Full Name */}
               <View style={styles.inputGroup}>
-                <ThemedText style={styles.inputLabel}>Nama Lengkap</ThemedText>
+                <ThemedText style={CommonStyles.inputLabel}>Nama Lengkap</ThemedText>
                 <View
                   style={[
-                    styles.inputContainer,
-                    nameFocused && styles.inputContainerFocused,
-                    Boolean(fieldErrors.name) && styles.inputContainerError,
+                    CommonStyles.inputContainer,
+                    nameFocused && CommonStyles.inputContainerFocused,
+                    Boolean(fieldErrors.name) && CommonStyles.inputContainerError,
                   ]}>
                   <View style={styles.inputIcon}>
-                    <UserIcon color={fieldErrors.name ? '#EF4444' : nameFocused ? Colors.light.primary : '#575757'} />
+                    <UserIcon color={fieldErrors.name ? Palette.danger : nameFocused ? Palette.primary : Palette.secondary} />
                   </View>
                   <TextInput
                     style={styles.textInput}
                     placeholder="Contoh: Nova Ardiansyah"
-                    placeholderTextColor="#9AA0A6"
+                    placeholderTextColor={Palette.textMuted}
                     value={name}
                     onChangeText={(text) => {
                       setName(text);
@@ -298,26 +307,26 @@ export default function RegisterScreen() {
                   />
                 </View>
                 {fieldErrors.name ? (
-                  <ThemedText style={styles.fieldErrorText}>{fieldErrors.name}</ThemedText>
+                  <ThemedText style={CommonStyles.fieldErrorText}>{fieldErrors.name}</ThemedText>
                 ) : null}
               </View>
 
               {/* Email */}
               <View style={styles.inputGroup}>
-                <ThemedText style={styles.inputLabel}>Alamat Email</ThemedText>
+                <ThemedText style={CommonStyles.inputLabel}>Alamat Email</ThemedText>
                 <View
                   style={[
-                    styles.inputContainer,
-                    emailFocused && styles.inputContainerFocused,
-                    Boolean(fieldErrors.email) && styles.inputContainerError,
+                    CommonStyles.inputContainer,
+                    emailFocused && CommonStyles.inputContainerFocused,
+                    Boolean(fieldErrors.email) && CommonStyles.inputContainerError,
                   ]}>
                   <View style={styles.inputIcon}>
-                    <MailIcon color={fieldErrors.email ? '#EF4444' : emailFocused ? Colors.light.primary : '#575757'} />
+                    <MailIcon color={fieldErrors.email ? Palette.danger : emailFocused ? Palette.primary : Palette.secondary} />
                   </View>
                   <TextInput
                     style={styles.textInput}
                     placeholder="nama@email.com"
-                    placeholderTextColor="#9AA0A6"
+                    placeholderTextColor={Palette.textMuted}
                     value={email}
                     onChangeText={(text) => {
                       setEmail(text);
@@ -332,26 +341,26 @@ export default function RegisterScreen() {
                   />
                 </View>
                 {fieldErrors.email ? (
-                  <ThemedText style={styles.fieldErrorText}>{fieldErrors.email}</ThemedText>
+                  <ThemedText style={CommonStyles.fieldErrorText}>{fieldErrors.email}</ThemedText>
                 ) : null}
               </View>
 
               {/* Password */}
               <View style={styles.inputGroup}>
-                <ThemedText style={styles.inputLabel}>Kata Sandi</ThemedText>
+                <ThemedText style={CommonStyles.inputLabel}>Kata Sandi</ThemedText>
                 <View
                   style={[
-                    styles.inputContainer,
-                    passwordFocused && styles.inputContainerFocused,
-                    Boolean(fieldErrors.password) && styles.inputContainerError,
+                    CommonStyles.inputContainer,
+                    passwordFocused && CommonStyles.inputContainerFocused,
+                    Boolean(fieldErrors.password) && CommonStyles.inputContainerError,
                   ]}>
                   <View style={styles.inputIcon}>
-                    <LockIcon color={fieldErrors.password ? '#EF4444' : passwordFocused ? Colors.light.primary : '#575757'} />
+                    <LockIcon color={fieldErrors.password ? Palette.danger : passwordFocused ? Palette.primary : Palette.secondary} />
                   </View>
                   <TextInput
                     style={styles.textInput}
                     placeholder="Minimal 6 karakter"
-                    placeholderTextColor="#9AA0A6"
+                    placeholderTextColor={Palette.textMuted}
                     value={password}
                     onChangeText={(text) => {
                       setPassword(text);
@@ -367,7 +376,7 @@ export default function RegisterScreen() {
                     onPress={() => setShowPassword(!showPassword)}
                     style={styles.eyeButton}
                     hitSlop={8}>
-                    <EyeIcon visible={showPassword} color="#575757" />
+                    <EyeIcon visible={showPassword} color={Palette.secondary} />
                   </Pressable>
                 </View>
 
@@ -396,26 +405,26 @@ export default function RegisterScreen() {
                 ) : null}
 
                 {fieldErrors.password ? (
-                  <ThemedText style={styles.fieldErrorText}>{fieldErrors.password}</ThemedText>
+                  <ThemedText style={CommonStyles.fieldErrorText}>{fieldErrors.password}</ThemedText>
                 ) : null}
               </View>
 
               {/* Password Confirmation */}
               <View style={styles.inputGroup}>
-                <ThemedText style={styles.inputLabel}>Konfirmasi Kata Sandi</ThemedText>
+                <ThemedText style={CommonStyles.inputLabel}>Konfirmasi Kata Sandi</ThemedText>
                 <View
                   style={[
-                    styles.inputContainer,
-                    confirmFocused && styles.inputContainerFocused,
-                    Boolean(fieldErrors.passwordConfirmation) && styles.inputContainerError,
+                    CommonStyles.inputContainer,
+                    confirmFocused && CommonStyles.inputContainerFocused,
+                    Boolean(fieldErrors.passwordConfirmation) && CommonStyles.inputContainerError,
                   ]}>
                   <View style={styles.inputIcon}>
-                    <LockIcon color={fieldErrors.passwordConfirmation ? '#EF4444' : confirmFocused ? Colors.light.primary : '#575757'} />
+                    <LockIcon color={fieldErrors.passwordConfirmation ? Palette.danger : confirmFocused ? Palette.primary : Palette.secondary} />
                   </View>
                   <TextInput
                     style={styles.textInput}
                     placeholder="Ulangi kata sandi"
-                    placeholderTextColor="#9AA0A6"
+                    placeholderTextColor={Palette.textMuted}
                     value={passwordConfirmation}
                     onChangeText={(text) => {
                       setPasswordConfirmation(text);
@@ -432,11 +441,11 @@ export default function RegisterScreen() {
                     onPress={() => setShowConfirmPassword(!showConfirmPassword)}
                     style={styles.eyeButton}
                     hitSlop={8}>
-                    <EyeIcon visible={showConfirmPassword} color="#575757" />
+                    <EyeIcon visible={showConfirmPassword} color={Palette.secondary} />
                   </Pressable>
                 </View>
                 {fieldErrors.passwordConfirmation ? (
-                  <ThemedText style={styles.fieldErrorText}>{fieldErrors.passwordConfirmation}</ThemedText>
+                  <ThemedText style={CommonStyles.fieldErrorText}>{fieldErrors.passwordConfirmation}</ThemedText>
                 ) : null}
               </View>
 
@@ -462,24 +471,23 @@ export default function RegisterScreen() {
                   </ThemedText>
                 </Pressable>
                 {fieldErrors.agreeTerms ? (
-                  <ThemedText style={styles.fieldErrorText}>{fieldErrors.agreeTerms}</ThemedText>
+                  <ThemedText style={CommonStyles.fieldErrorText}>{fieldErrors.agreeTerms}</ThemedText>
                 ) : null}
               </View>
-
 
               {/* Register Button */}
               <Pressable
                 style={({ pressed }) => [
-                  styles.registerButton,
-                  pressed && styles.registerButtonPressed,
-                  isLoading && styles.registerButtonDisabled,
+                  CommonStyles.buttonPrimary,
+                  pressed && CommonStyles.buttonPrimaryPressed,
+                  isLoading && CommonStyles.buttonPrimaryDisabled,
                 ]}
                 onPress={handleRegister}
                 disabled={isLoading}>
                 {isLoading ? (
-                  <ActivityIndicator color="#FFFFFF" size="small" />
+                  <ActivityIndicator color={Palette.white} size="small" />
                 ) : (
-                  <Text style={styles.registerButtonText}>Daftar Akun</Text>
+                  <Text style={CommonStyles.buttonPrimaryText}>Daftar Akun</Text>
                 )}
               </Pressable>
             </View>
@@ -501,16 +509,6 @@ export default function RegisterScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#F8F9FA',
-    flexDirection: 'row',
-    justifyContent: 'center',
-  },
-  safeArea: {
-    flex: 1,
-    maxWidth: MaxContentWidth,
-  },
   keyboardAvoid: {
     flex: 1,
   },
@@ -526,107 +524,62 @@ const styles = StyleSheet.create({
   },
   title: {
     fontFamily: Fonts.sans,
-    fontSize: 24,
+    fontSize: FontSize['2xl'] + 2,
     lineHeight: 32,
-    fontWeight: '700',
-    color: '#242424',
+    fontWeight: FontWeight.bold,
+    color: Palette.dark,
     textAlign: 'center',
     marginBottom: 6,
     paddingBottom: 2,
   },
   subtitle: {
     fontFamily: Fonts.sans,
-    fontSize: 14,
+    fontSize: FontSize.base,
     textAlign: 'center',
     lineHeight: 20,
     maxWidth: 340,
   },
   errorBanner: {
-    backgroundColor: '#FEE2E2',
-    borderColor: '#FCA5A5',
+    backgroundColor: Palette.dangerBg,
+    borderColor: Palette.dangerBorder,
     borderWidth: 1,
-    borderRadius: 10,
+    borderRadius: BorderRadius.md,
     paddingHorizontal: 14,
     paddingVertical: 10,
     marginBottom: Spacing.three,
   },
   errorText: {
     fontFamily: Fonts.sans,
-    fontSize: 13,
-    color: '#DC2626',
-    fontWeight: '500',
+    fontSize: FontSize.sm + 1,
+    color: Palette.dangerDark,
+    fontWeight: FontWeight.medium,
   },
   successBanner: {
-    backgroundColor: '#D1FAE5',
-    borderColor: '#6EE7B7',
+    backgroundColor: Palette.successBg,
+    borderColor: Palette.successBorder,
     borderWidth: 1,
-    borderRadius: 10,
+    borderRadius: BorderRadius.md,
     paddingHorizontal: 14,
     paddingVertical: 10,
     marginBottom: Spacing.three,
   },
   successText: {
     fontFamily: Fonts.sans,
-    fontSize: 13,
-    color: '#065F46',
-    fontWeight: '600',
+    fontSize: FontSize.sm + 1,
+    color: Palette.successText,
+    fontWeight: FontWeight.semibold,
   },
   form: {
-    backgroundColor: '#FFFFFF',
-    borderRadius: 18,
+    backgroundColor: Palette.card,
+    borderRadius: BorderRadius['2xl'],
     padding: Spacing.four,
     borderWidth: 1,
-    borderColor: '#ECEEF2',
+    borderColor: Palette.border,
     gap: 16,
-    ...Platform.select({
-      ios: {
-        shadowColor: '#000000',
-        shadowOffset: { width: 0, height: 6 },
-        shadowOpacity: 0.04,
-        shadowRadius: 12,
-      },
-      android: {
-        elevation: 2,
-      },
-      web: {
-        boxShadow: '0 6px 20px rgba(0, 0, 0, 0.04)',
-      },
-    }),
+    ...Shadows.lg,
   },
   inputGroup: {
     gap: 6,
-  },
-  inputLabel: {
-    fontFamily: Fonts.sans,
-    fontSize: 13,
-    fontWeight: '600',
-    color: '#242424',
-  },
-  inputContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#F8F9FA',
-    borderWidth: 1.2,
-    borderColor: '#E2E8F0',
-    borderRadius: 12,
-    paddingHorizontal: 12,
-    height: 48,
-  },
-  inputContainerFocused: {
-    borderColor: Colors.light.primary,
-    backgroundColor: '#FFFFFF',
-  },
-  inputContainerError: {
-    borderColor: '#EF4444',
-    backgroundColor: '#FFF8F8',
-  },
-  fieldErrorText: {
-    fontFamily: Fonts.sans,
-    fontSize: 12,
-    color: '#EF4444',
-    marginTop: 4,
-    marginLeft: 2,
-    fontWeight: '500',
   },
   inputIcon: {
     marginRight: 10,
@@ -634,8 +587,8 @@ const styles = StyleSheet.create({
   textInput: {
     flex: 1,
     fontFamily: Fonts.sans,
-    fontSize: 14,
-    color: '#242424',
+    fontSize: FontSize.base,
+    color: Palette.dark,
     height: '100%',
     paddingVertical: 0,
   },
@@ -651,18 +604,18 @@ const styles = StyleSheet.create({
   strengthBarBackground: {
     flex: 1,
     height: 4,
-    backgroundColor: '#ECEEF2',
-    borderRadius: 2,
+    backgroundColor: Palette.border,
+    borderRadius: BorderRadius.xs,
     overflow: 'hidden',
   },
   strengthBarFill: {
     height: '100%',
-    borderRadius: 2,
+    borderRadius: BorderRadius.xs,
   },
   strengthLabel: {
     fontFamily: Fonts.sans,
-    fontSize: 11,
-    fontWeight: '600',
+    fontSize: FontSize.xs,
+    fontWeight: FontWeight.semibold,
     minWidth: 70,
     textAlign: 'right',
   },
@@ -675,44 +628,24 @@ const styles = StyleSheet.create({
   checkbox: {
     width: 18,
     height: 18,
-    borderRadius: 5,
+    borderRadius: BorderRadius.xs + 1,
     borderWidth: 1.5,
-    borderColor: '#9AA0A6',
+    borderColor: Palette.textMuted,
     alignItems: 'center',
     justifyContent: 'center',
   },
   checkboxActive: {
-    backgroundColor: Colors.light.primary,
-    borderColor: Colors.light.primary,
+    backgroundColor: Palette.primary,
+    borderColor: Palette.primary,
   },
   checkboxError: {
-    borderColor: '#EF4444',
+    borderColor: Palette.danger,
   },
   checkboxLabel: {
     fontFamily: Fonts.sans,
-    fontSize: 12.5,
+    fontSize: FontSize.sm + 0.5,
     flex: 1,
     lineHeight: 18,
-  },
-  registerButton: {
-    backgroundColor: Colors.light.primary,
-    height: 48,
-    borderRadius: 12,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginTop: 4,
-  },
-  registerButtonPressed: {
-    opacity: 0.88,
-  },
-  registerButtonDisabled: {
-    backgroundColor: Colors.light.primaryDisabled,
-  },
-  registerButtonText: {
-    fontFamily: Fonts.sans,
-    fontSize: 15,
-    fontWeight: '700',
-    color: '#FFFFFF',
   },
   footer: {
     flexDirection: 'row',
@@ -722,12 +655,13 @@ const styles = StyleSheet.create({
   },
   footerText: {
     fontFamily: Fonts.sans,
-    fontSize: 14,
+    fontSize: FontSize.base,
   },
   loginLink: {
     fontFamily: Fonts.sans,
-    fontSize: 14,
-    fontWeight: '700',
-    color: Colors.light.primary,
+    fontSize: FontSize.base,
+    fontWeight: FontWeight.bold,
+    color: Palette.primary,
   },
 });
+

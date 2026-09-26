@@ -6,11 +6,21 @@ import Svg, { Circle, Path } from 'react-native-svg';
 
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
-import { BottomTabInset, Fonts, MaxContentWidth, Spacing } from '@/constants/theme';
+import {
+  BorderRadius,
+  BottomTabInset,
+  CommonStyles,
+  FontSize,
+  FontWeight,
+  Fonts,
+  MaxContentWidth,
+  Palette,
+  Spacing,
+} from '@/constants/theme';
 import { useAuth } from '@/context/auth-context';
 
 // --- Icons ---
-function UserIcon({ color = '#E76006', size = 20 }: { color?: string; size?: number }) {
+function UserIcon({ color = Palette.primary, size = 20 }: { color?: string; size?: number }) {
   return (
     <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
       <Path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
@@ -19,7 +29,7 @@ function UserIcon({ color = '#E76006', size = 20 }: { color?: string; size?: num
   );
 }
 
-function ShieldLockIcon({ color = '#E76006', size = 20 }: { color?: string; size?: number }) {
+function ShieldLockIcon({ color = Palette.primary, size = 20 }: { color?: string; size?: number }) {
   return (
     <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
       <Path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
@@ -29,7 +39,7 @@ function ShieldLockIcon({ color = '#E76006', size = 20 }: { color?: string; size
   );
 }
 
-function SettingsIcon({ color = '#E76006', size = 20 }: { color?: string; size?: number }) {
+function SettingsIcon({ color = Palette.primary, size = 20 }: { color?: string; size?: number }) {
   return (
     <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
       <Circle cx="12" cy="12" r="3" stroke={color} strokeWidth="2" />
@@ -38,7 +48,7 @@ function SettingsIcon({ color = '#E76006', size = 20 }: { color?: string; size?:
   );
 }
 
-function HelpCircleIcon({ color = '#E76006', size = 20 }: { color?: string; size?: number }) {
+function HelpCircleIcon({ color = Palette.primary, size = 20 }: { color?: string; size?: number }) {
   return (
     <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
       <Circle cx="12" cy="12" r="10" stroke={color} strokeWidth="2" />
@@ -48,7 +58,7 @@ function HelpCircleIcon({ color = '#E76006', size = 20 }: { color?: string; size
   );
 }
 
-function InfoIcon({ color = '#E76006', size = 20 }: { color?: string; size?: number }) {
+function InfoIcon({ color = Palette.primary, size = 20 }: { color?: string; size?: number }) {
   return (
     <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
       <Circle cx="12" cy="12" r="10" stroke={color} strokeWidth="2" />
@@ -58,7 +68,7 @@ function InfoIcon({ color = '#E76006', size = 20 }: { color?: string; size?: num
   );
 }
 
-function ChevronRightIcon({ color = '#8C93A0', size = 16 }: { color?: string; size?: number }) {
+function ChevronRightIcon({ color = Palette.iconMuted, size = 16 }: { color?: string; size?: number }) {
   return (
     <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
       <Path d="M9 18l6-6-6-6" stroke={color} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
@@ -66,7 +76,7 @@ function ChevronRightIcon({ color = '#8C93A0', size = 16 }: { color?: string; si
   );
 }
 
-function LogoutIcon({ color = '#EF4444', size = 18 }: { color?: string; size?: number }) {
+function LogoutIcon({ color = Palette.danger, size = 18 }: { color?: string; size?: number }) {
   return (
     <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
       <Path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
@@ -130,11 +140,11 @@ export default function ProfileScreen() {
   };
 
   return (
-    <ThemedView style={styles.container}>
-      <SafeAreaView edges={['top', 'left', 'right']} style={styles.safeArea}>
+    <ThemedView style={CommonStyles.screenContainer}>
+      <SafeAreaView edges={['top', 'left', 'right']} style={CommonStyles.safeArea}>
         <ScrollView
           showsVerticalScrollIndicator={false}
-          contentContainerStyle={styles.scrollContent}>
+          contentContainerStyle={CommonStyles.scrollContent}>
           {/* Header */}
           <View style={styles.headerContainer}>
             <ThemedText style={styles.headerTitle}>Profile</ThemedText>
@@ -169,7 +179,7 @@ export default function ProfileScreen() {
                   ]}
                   disabled={item.type === 'info'}>
                   <View style={styles.menuIconWrapper}>
-                    <item.icon color="#E76006" size={20} />
+                    <item.icon color={Palette.primary} size={20} />
                   </View>
                   <View style={styles.menuTextContainer}>
                     <ThemedText style={styles.menuTitle}>{item.title}</ThemedText>
@@ -182,7 +192,7 @@ export default function ProfileScreen() {
                       <ThemedText style={styles.versionBadgeText}>{item.value}</ThemedText>
                     </View>
                   ) : (
-                    <ChevronRightIcon color="#8C93A0" size={16} />
+                    <ChevronRightIcon color={Palette.iconMuted} size={16} />
                   )}
                 </Pressable>
                 {idx < menuItems.length - 1 && <View style={styles.divider} />}
@@ -194,12 +204,12 @@ export default function ProfileScreen() {
           <View style={styles.sectionContainer}>
             <Pressable
               style={({ pressed }) => [
-                styles.logoutButton,
-                pressed && styles.logoutButtonPressed,
+                CommonStyles.buttonDanger,
+                pressed && CommonStyles.buttonDangerPressed,
               ]}
               onPress={handleLogout}>
               <LogoutIcon />
-              <ThemedText style={styles.logoutText}>Keluar dari Akun</ThemedText>
+              <ThemedText style={CommonStyles.buttonDangerText}>Keluar dari Akun</ThemedText>
             </Pressable>
           </View>
         </ScrollView>
@@ -209,74 +219,60 @@ export default function ProfileScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    flexDirection: 'row',
-    justifyContent: 'center',
-  },
-  safeArea: {
-    flex: 1,
-    maxWidth: MaxContentWidth,
-  },
-  scrollContent: {
-    paddingHorizontal: Spacing.three,
-    paddingTop: Spacing.three,
-    paddingBottom: BottomTabInset + Spacing.four,
-  },
   headerContainer: {
     marginBottom: Spacing.three,
   },
   headerTitle: {
     fontFamily: Fonts.sans,
-    fontSize: 22,
-    fontWeight: '700',
+    fontSize: FontSize['2xl'],
+    fontWeight: FontWeight.bold,
   },
   headerSubtitle: {
     fontFamily: Fonts.sans,
-    fontSize: 13,
+    fontSize: FontSize.sm + 1,
     marginTop: 4,
   },
   card: {
     flexDirection: 'row',
     alignItems: 'center',
-    borderRadius: 14,
-    backgroundColor: '#FFFFFF',
+    borderRadius: BorderRadius.xl,
+    backgroundColor: Palette.card,
     padding: Spacing.three + 2,
     borderWidth: 1,
-    borderColor: '#ECEEF2',
+    borderColor: Palette.border,
     gap: 12,
   },
   avatar: {
     width: 48,
     height: 48,
-    borderRadius: 24,
-    backgroundColor: '#E76006',
+    borderRadius: BorderRadius.full,
+    backgroundColor: Palette.primary,
     alignItems: 'center',
     justifyContent: 'center',
   },
   avatarText: {
-    color: '#ffffff',
-    fontSize: 18,
-    fontWeight: '700',
+    color: Palette.white,
+    fontSize: FontSize.xl,
+    fontWeight: FontWeight.bold,
   },
   profileInfo: {
     gap: 2,
   },
   profileName: {
     fontFamily: Fonts.sans,
-    fontSize: 15,
-    fontWeight: '700',
+    fontSize: FontSize.md,
+    fontWeight: FontWeight.bold,
   },
   profileDesc: {
     fontFamily: Fonts.sans,
-    fontSize: 12,
+    fontSize: FontSize.sm,
   },
   menuCard: {
     marginTop: Spacing.three,
-    borderRadius: 14,
-    backgroundColor: '#FFFFFF',
+    borderRadius: BorderRadius.xl,
+    backgroundColor: Palette.card,
     borderWidth: 1,
-    borderColor: '#ECEEF2',
+    borderColor: Palette.border,
     overflow: 'hidden',
   },
   menuRow: {
@@ -287,13 +283,13 @@ const styles = StyleSheet.create({
     gap: 12,
   },
   menuRowPressed: {
-    backgroundColor: '#F8F9FA',
+    backgroundColor: Palette.background,
   },
   menuIconWrapper: {
     width: 38,
     height: 38,
-    borderRadius: 10,
-    backgroundColor: '#FFF7F2',
+    borderRadius: BorderRadius.md,
+    backgroundColor: Palette.primaryLight,
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -303,54 +299,34 @@ const styles = StyleSheet.create({
   },
   menuTitle: {
     fontFamily: Fonts.sans,
-    fontSize: 14,
-    fontWeight: '600',
+    fontSize: FontSize.base,
+    fontWeight: FontWeight.semibold,
   },
   menuSubtitle: {
     fontFamily: Fonts.sans,
-    fontSize: 11.5,
+    fontSize: FontSize.xs + 0.5,
     lineHeight: 15,
   },
   versionBadge: {
-    backgroundColor: '#F0F1F5',
+    backgroundColor: Palette.muted,
     paddingHorizontal: 8,
     paddingVertical: 3,
-    borderRadius: 8,
+    borderRadius: BorderRadius.sm + 2,
   },
   versionBadgeText: {
     fontFamily: Fonts.sans,
-    fontSize: 12,
-    fontWeight: '600',
-    color: '#575757',
+    fontSize: FontSize.sm,
+    fontWeight: FontWeight.semibold,
+    color: Palette.secondary,
   },
   divider: {
     height: 1,
-    backgroundColor: '#F0F1F5',
+    backgroundColor: Palette.muted,
     marginLeft: 62,
     marginRight: Spacing.three,
   },
   sectionContainer: {
     marginTop: Spacing.three,
-  },
-  logoutButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: 8,
-    backgroundColor: '#FFFFFF',
-    borderWidth: 1,
-    borderColor: '#FEE2E2',
-    borderRadius: 14,
-    paddingVertical: 14,
-  },
-  logoutButtonPressed: {
-    backgroundColor: '#FEF2F2',
-  },
-  logoutText: {
-    fontFamily: Fonts.sans,
-    fontSize: 14,
-    fontWeight: '600',
-    color: '#EF4444',
   },
 });
 
