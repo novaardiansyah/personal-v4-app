@@ -1,4 +1,4 @@
-import React from 'react';
+import { usePathname } from 'expo-router';
 import {
   Tabs,
   TabList,
@@ -143,28 +143,33 @@ function ProfileTabIcon({ color, focused }: { color: string; focused: boolean })
 }
 
 export default function AppTabs() {
+  const pathname = usePathname();
+  const hideTabBar = pathname === '/login' || pathname === '/register';
+
   return (
     <Tabs>
       <TabSlot style={{ height: '100%' }} />
-      <TabList asChild>
-        <CustomTabList>
-          <TabTrigger name="home" href="/" asChild>
-            <TabButton icon={(c, f) => <HomeTabIcon color={c} focused={f} />}>Beranda</TabButton>
-          </TabTrigger>
-          <TabTrigger name="budget" href="/budget" asChild>
-            <TabButton icon={(c, f) => <BudgetTabIcon color={c} focused={f} />}>Anggaran</TabButton>
-          </TabTrigger>
-          <TabTrigger name="transactions" href="/transactions" asChild>
-            <TabButton icon={(c, f) => <TransactionsTabIcon color={c} focused={f} />}>Transaksi</TabButton>
-          </TabTrigger>
-          <TabTrigger name="goals" href="/goals" asChild>
-            <TabButton icon={(c, f) => <GoalsTabIcon color={c} focused={f} />}>Tujuan</TabButton>
-          </TabTrigger>
-          <TabTrigger name="profile" href="/profile" asChild>
-            <TabButton icon={(c, f) => <ProfileTabIcon color={c} focused={f} />}>Profile</TabButton>
-          </TabTrigger>
-        </CustomTabList>
-      </TabList>
+      {!hideTabBar && (
+        <TabList asChild>
+          <CustomTabList>
+            <TabTrigger name="home" href="/" asChild>
+              <TabButton icon={(c, f) => <HomeTabIcon color={c} focused={f} />}>Beranda</TabButton>
+            </TabTrigger>
+            <TabTrigger name="budget" href="/budget" asChild>
+              <TabButton icon={(c, f) => <BudgetTabIcon color={c} focused={f} />}>Anggaran</TabButton>
+            </TabTrigger>
+            <TabTrigger name="transactions" href="/transactions" asChild>
+              <TabButton icon={(c, f) => <TransactionsTabIcon color={c} focused={f} />}>Transaksi</TabButton>
+            </TabTrigger>
+            <TabTrigger name="goals" href="/goals" asChild>
+              <TabButton icon={(c, f) => <GoalsTabIcon color={c} focused={f} />}>Tujuan</TabButton>
+            </TabTrigger>
+            <TabTrigger name="profile" href="/profile" asChild>
+              <TabButton icon={(c, f) => <ProfileTabIcon color={c} focused={f} />}>Profile</TabButton>
+            </TabTrigger>
+          </CustomTabList>
+        </TabList>
+      )}
     </Tabs>
   );
 }

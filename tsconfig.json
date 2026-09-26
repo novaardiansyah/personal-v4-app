@@ -18,5 +18,11 @@
     ".expo/types/**/*.ts",
     "expo-env.d.ts",
     "nativewind-env.d.ts"
+  ],
+  "exclude": [
+    "api",
+    "node_modules",
+    "android",
+    "obsidian"
   ]
 }
