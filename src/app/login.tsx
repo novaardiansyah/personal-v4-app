@@ -18,6 +18,7 @@ import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { Colors, Fonts, MaxContentWidth, Spacing } from '@/constants/theme';
 import { useAuth } from '@/context/auth-context';
+import { loginMobileApi } from '@/services/api';
 
 // --- Vector Icons ---
 function MailIcon({ color = '#575757', size = 20 }: { color?: string; size?: number }) {
@@ -72,49 +73,73 @@ export default function LoginScreen() {
   const [showPassword, setShowPassword] = useState(false);
   const [rememberMe, setRememberMe] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
-  const [errorMessage, setErrorMessage] = useState('');
+  const [fieldErrors, setFieldErrors] = useState<{ email?: string; password?: string }>({});
+  const [generalError, setGeneralError] = useState('');
   const [emailFocused, setEmailFocused] = useState(false);
   const [passwordFocused, setPasswordFocused] = useState(false);
 
   const handleLogin = async () => {
-    setErrorMessage('');
+    setGeneralError('');
+    const clientErrors: { email?: string; password?: string } = {};
 
     if (!email.trim()) {
-      setErrorMessage('Silakan masukkan alamat email Anda.');
-      return;
-    }
-
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email.trim())) {
-      setErrorMessage('Format email tidak valid.');
-      return;
+      clientErrors.email = 'Email wajib diisi.';
+    } else {
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(email.trim())) {
+        clientErrors.email = 'Format email tidak valid (contoh: nama@email.com).';
+      }
     }
 
     if (!password) {
-      setErrorMessage('Silakan masukkan kata sandi.');
+      clientErrors.password = 'Kata sandi wajib diisi.';
+    } else if (password.length < 6) {
+      clientErrors.password = 'Kata sandi minimal 6 karakter.';
+    }
+
+    if (Object.keys(clientErrors).length > 0) {
+      setFieldErrors(clientErrors);
       return;
     }
 
-    if (password.length < 6) {
-      setErrorMessage('Kata sandi minimal 6 karakter.');
-      return;
-    }
-
+    setFieldErrors({});
     setIsLoading(true);
 
     try {
-      // Simulate network request for login
-      await new Promise((resolve) => setTimeout(resolve, 800));
-
-      login({
-        name: email.split('@')[0],
+      const res = await loginMobileApi({
         email: email.trim(),
-        token: 'auth-token-sample',
+        password,
       });
 
-      router.replace('/');
+      if (!res.success) {
+        const serverFieldErrors: { email?: string; password?: string } = {};
+
+        if (res.errors?.email?.[0]) {
+          serverFieldErrors.email = res.errors.email[0];
+        }
+        if (res.errors?.password?.[0]) {
+          serverFieldErrors.password = res.errors.password[0];
+        }
+
+        if (Object.keys(serverFieldErrors).length > 0) {
+          setFieldErrors(serverFieldErrors);
+        } else {
+          setGeneralError(res.message || 'Login gagal. Periksa kembali email dan kata sandi Anda.');
+        }
+        return;
+      }
+
+      if (res.data) {
+        login({
+          id: res.data.user.id,
+          name: res.data.user.name,
+          email: res.data.user.email,
+          token: res.data.token,
+        });
+        router.replace('/');
+      }
     } catch {
-      setErrorMessage('Terjadi kesalahan saat masuk. Silakan coba lagi.');
+      setGeneralError('Terjadi kesalahan koneksi. Silakan periksa jaringan Anda dan coba lagi.');
     } finally {
       setIsLoading(false);
     }
@@ -138,10 +163,10 @@ export default function LoginScreen() {
               </ThemedText>
             </View>
 
-            {/* Error Banner */}
-            {errorMessage ? (
+            {/* General Error Banner */}
+            {generalError ? (
               <View style={styles.errorBanner}>
-                <ThemedText style={styles.errorText}>{errorMessage}</ThemedText>
+                <ThemedText style={styles.errorText}>{generalError}</ThemedText>
               </View>
             ) : null}
 
@@ -154,16 +179,21 @@ export default function LoginScreen() {
                   style={[
                     styles.inputContainer,
                     emailFocused && styles.inputContainerFocused,
+                    Boolean(fieldErrors.email) && styles.inputContainerError,
                   ]}>
                   <View style={styles.inputIcon}>
-                    <MailIcon color={emailFocused ? Colors.light.primary : '#575757'} />
+                    <MailIcon color={fieldErrors.email ? '#EF4444' : emailFocused ? Colors.light.primary : '#575757'} />
                   </View>
                   <TextInput
                     style={styles.textInput}
                     placeholder="nama@email.com"
                     placeholderTextColor="#9AA0A6"
                     value={email}
-                    onChangeText={setEmail}
+                    onChangeText={(text) => {
+                      setEmail(text);
+                      if (fieldErrors.email) setFieldErrors((prev) => ({ ...prev, email: undefined }));
+                      if (generalError) setGeneralError('');
+                    }}
                     keyboardType="email-address"
                     autoCapitalize="none"
                     autoCorrect={false}
@@ -171,6 +201,9 @@ export default function LoginScreen() {
                     onBlur={() => setEmailFocused(false)}
                   />
                 </View>
+                {fieldErrors.email ? (
+                  <ThemedText style={styles.fieldErrorText}>{fieldErrors.email}</ThemedText>
+                ) : null}
               </View>
 
               {/* Password Input */}
@@ -180,16 +213,21 @@ export default function LoginScreen() {
                   style={[
                     styles.inputContainer,
                     passwordFocused && styles.inputContainerFocused,
+                    Boolean(fieldErrors.password) && styles.inputContainerError,
                   ]}>
                   <View style={styles.inputIcon}>
-                    <LockIcon color={passwordFocused ? Colors.light.primary : '#575757'} />
+                    <LockIcon color={fieldErrors.password ? '#EF4444' : passwordFocused ? Colors.light.primary : '#575757'} />
                   </View>
                   <TextInput
                     style={styles.textInput}
                     placeholder="Masukkan kata sandi"
                     placeholderTextColor="#9AA0A6"
                     value={password}
-                    onChangeText={setPassword}
+                    onChangeText={(text) => {
+                      setPassword(text);
+                      if (fieldErrors.password) setFieldErrors((prev) => ({ ...prev, password: undefined }));
+                      if (generalError) setGeneralError('');
+                    }}
                     secureTextEntry={!showPassword}
                     autoCapitalize="none"
                     onFocus={() => setPasswordFocused(true)}
@@ -202,7 +240,11 @@ export default function LoginScreen() {
                     <EyeIcon visible={showPassword} color="#575757" />
                   </Pressable>
                 </View>
+                {fieldErrors.password ? (
+                  <ThemedText style={styles.fieldErrorText}>{fieldErrors.password}</ThemedText>
+                ) : null}
               </View>
+
 
               {/* Remember Me & Forgot Password */}
               <View style={styles.rowBetween}>
@@ -221,7 +263,7 @@ export default function LoginScreen() {
                   </ThemedText>
                 </Pressable>
 
-                <Pressable onPress={() => setErrorMessage('Fitur reset kata sandi sedang dalam pengembangan.')}>
+                <Pressable onPress={() => setGeneralError('Fitur reset kata sandi sedang dalam pengembangan.')}>
                   <ThemedText style={styles.forgotPassword}>Lupa Sandi?</ThemedText>
                 </Pressable>
               </View>
@@ -359,6 +401,18 @@ const styles = StyleSheet.create({
   inputContainerFocused: {
     borderColor: Colors.light.primary,
     backgroundColor: '#FFFFFF',
+  },
+  inputContainerError: {
+    borderColor: '#EF4444',
+    backgroundColor: '#FFF8F8',
+  },
+  fieldErrorText: {
+    fontFamily: Fonts.sans,
+    fontSize: 12,
+    color: '#EF4444',
+    marginTop: 4,
+    marginLeft: 2,
+    fontWeight: '500',
   },
   inputIcon: {
     marginRight: 10,

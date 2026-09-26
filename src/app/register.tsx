@@ -18,6 +18,7 @@ import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { Colors, Fonts, MaxContentWidth, Spacing } from '@/constants/theme';
 import { useAuth } from '@/context/auth-context';
+import { registerMobileApi } from '@/services/api';
 
 // --- Vector Icons ---
 
@@ -85,7 +86,14 @@ export default function RegisterScreen() {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [agreeTerms, setAgreeTerms] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [errorMessage, setErrorMessage] = useState('');
+  const [fieldErrors, setFieldErrors] = useState<{
+    name?: string;
+    email?: string;
+    password?: string;
+    passwordConfirmation?: string;
+    agreeTerms?: string;
+  }>({});
+  const [generalError, setGeneralError] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
 
   const [nameFocused, setNameFocused] = useState(false);
@@ -137,64 +145,93 @@ export default function RegisterScreen() {
   };
 
   const handleRegister = async () => {
-    setErrorMessage('');
+    setGeneralError('');
     setSuccessMessage('');
+    const clientErrors: typeof fieldErrors = {};
 
     if (!name.trim()) {
-      setErrorMessage('Silakan masukkan nama lengkap Anda.');
-      return;
+      clientErrors.name = 'Nama lengkap wajib diisi.';
+    } else if (name.trim().length < 2) {
+      clientErrors.name = 'Nama lengkap minimal 2 karakter.';
     }
 
     if (!email.trim()) {
-      setErrorMessage('Silakan masukkan alamat email.');
-      return;
-    }
-
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email.trim())) {
-      setErrorMessage('Format email tidak valid.');
-      return;
+      clientErrors.email = 'Alamat email wajib diisi.';
+    } else {
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(email.trim())) {
+        clientErrors.email = 'Format email tidak valid (contoh: nama@email.com).';
+      }
     }
 
     if (!password) {
-      setErrorMessage('Silakan tentukan kata sandi.');
-      return;
+      clientErrors.password = 'Kata sandi wajib diisi.';
+    } else if (password.length < 6) {
+      clientErrors.password = 'Kata sandi minimal 6 karakter.';
     }
 
-    if (password.length < 6) {
-      setErrorMessage('Kata sandi minimal 6 karakter.');
-      return;
-    }
-
-    if (password !== passwordConfirmation) {
-      setErrorMessage('Konfirmasi kata sandi tidak cocok.');
-      return;
+    if (!passwordConfirmation) {
+      clientErrors.passwordConfirmation = 'Konfirmasi kata sandi wajib diisi.';
+    } else if (password !== passwordConfirmation) {
+      clientErrors.passwordConfirmation = 'Konfirmasi kata sandi tidak cocok.';
     }
 
     if (!agreeTerms) {
-      setErrorMessage('Anda harus menyetujui Syarat & Ketentuan untuk melanjutkan.');
+      clientErrors.agreeTerms = 'Anda harus menyetujui Syarat & Ketentuan.';
+    }
+
+    if (Object.keys(clientErrors).length > 0) {
+      setFieldErrors(clientErrors);
       return;
     }
 
+    setFieldErrors({});
     setIsLoading(true);
 
     try {
-      // Simulate registration network request
-      await new Promise((resolve) => setTimeout(resolve, 900));
+      const res = await registerMobileApi({
+        name: name.trim(),
+        email: email.trim(),
+        password,
+      });
+
+      if (!res.success) {
+        const serverFieldErrors: typeof fieldErrors = {};
+
+        if (res.errors?.name?.[0]) {
+          serverFieldErrors.name = res.errors.name[0];
+        }
+        if (res.errors?.email?.[0]) {
+          serverFieldErrors.email = res.errors.email[0];
+        }
+        if (res.errors?.password?.[0]) {
+          serverFieldErrors.password = res.errors.password[0];
+        }
+
+        if (Object.keys(serverFieldErrors).length > 0) {
+          setFieldErrors(serverFieldErrors);
+        } else {
+          setGeneralError(res.message || 'Pendaftaran gagal. Silakan periksa kembali data Anda.');
+        }
+        return;
+      }
 
       setSuccessMessage('Pendaftaran berhasil! Mengalihkan ke beranda...');
 
-      login({
-        name: name.trim(),
-        email: email.trim(),
-        token: 'new-reg-token-sample',
-      });
+      if (res.data) {
+        login({
+          id: res.data.user.id,
+          name: res.data.user.name,
+          email: res.data.user.email,
+          token: res.data.token,
+        });
+      }
 
       setTimeout(() => {
         router.replace('/');
       }, 700);
     } catch {
-      setErrorMessage('Gagal mendaftar akun. Silakan coba beberapa saat lagi.');
+      setGeneralError('Terjadi kesalahan koneksi. Silakan periksa jaringan Anda dan coba lagi.');
     } finally {
       setIsLoading(false);
     }
@@ -219,9 +256,9 @@ export default function RegisterScreen() {
             </View>
 
             {/* Notification Banner */}
-            {errorMessage ? (
+            {generalError ? (
               <View style={styles.errorBanner}>
-                <ThemedText style={styles.errorText}>{errorMessage}</ThemedText>
+                <ThemedText style={styles.errorText}>{generalError}</ThemedText>
               </View>
             ) : null}
 
@@ -240,21 +277,29 @@ export default function RegisterScreen() {
                   style={[
                     styles.inputContainer,
                     nameFocused && styles.inputContainerFocused,
+                    Boolean(fieldErrors.name) && styles.inputContainerError,
                   ]}>
                   <View style={styles.inputIcon}>
-                    <UserIcon color={nameFocused ? Colors.light.primary : '#575757'} />
+                    <UserIcon color={fieldErrors.name ? '#EF4444' : nameFocused ? Colors.light.primary : '#575757'} />
                   </View>
                   <TextInput
                     style={styles.textInput}
                     placeholder="Contoh: Nova Ardiansyah"
                     placeholderTextColor="#9AA0A6"
                     value={name}
-                    onChangeText={setName}
+                    onChangeText={(text) => {
+                      setName(text);
+                      if (fieldErrors.name) setFieldErrors((prev) => ({ ...prev, name: undefined }));
+                      if (generalError) setGeneralError('');
+                    }}
                     autoCapitalize="words"
                     onFocus={() => setNameFocused(true)}
                     onBlur={() => setNameFocused(false)}
                   />
                 </View>
+                {fieldErrors.name ? (
+                  <ThemedText style={styles.fieldErrorText}>{fieldErrors.name}</ThemedText>
+                ) : null}
               </View>
 
               {/* Email */}
@@ -264,16 +309,21 @@ export default function RegisterScreen() {
                   style={[
                     styles.inputContainer,
                     emailFocused && styles.inputContainerFocused,
+                    Boolean(fieldErrors.email) && styles.inputContainerError,
                   ]}>
                   <View style={styles.inputIcon}>
-                    <MailIcon color={emailFocused ? Colors.light.primary : '#575757'} />
+                    <MailIcon color={fieldErrors.email ? '#EF4444' : emailFocused ? Colors.light.primary : '#575757'} />
                   </View>
                   <TextInput
                     style={styles.textInput}
                     placeholder="nama@email.com"
                     placeholderTextColor="#9AA0A6"
                     value={email}
-                    onChangeText={setEmail}
+                    onChangeText={(text) => {
+                      setEmail(text);
+                      if (fieldErrors.email) setFieldErrors((prev) => ({ ...prev, email: undefined }));
+                      if (generalError) setGeneralError('');
+                    }}
                     keyboardType="email-address"
                     autoCapitalize="none"
                     autoCorrect={false}
@@ -281,6 +331,9 @@ export default function RegisterScreen() {
                     onBlur={() => setEmailFocused(false)}
                   />
                 </View>
+                {fieldErrors.email ? (
+                  <ThemedText style={styles.fieldErrorText}>{fieldErrors.email}</ThemedText>
+                ) : null}
               </View>
 
               {/* Password */}
@@ -290,16 +343,21 @@ export default function RegisterScreen() {
                   style={[
                     styles.inputContainer,
                     passwordFocused && styles.inputContainerFocused,
+                    Boolean(fieldErrors.password) && styles.inputContainerError,
                   ]}>
                   <View style={styles.inputIcon}>
-                    <LockIcon color={passwordFocused ? Colors.light.primary : '#575757'} />
+                    <LockIcon color={fieldErrors.password ? '#EF4444' : passwordFocused ? Colors.light.primary : '#575757'} />
                   </View>
                   <TextInput
                     style={styles.textInput}
                     placeholder="Minimal 6 karakter"
                     placeholderTextColor="#9AA0A6"
                     value={password}
-                    onChangeText={setPassword}
+                    onChangeText={(text) => {
+                      setPassword(text);
+                      if (fieldErrors.password) setFieldErrors((prev) => ({ ...prev, password: undefined }));
+                      if (generalError) setGeneralError('');
+                    }}
                     secureTextEntry={!showPassword}
                     autoCapitalize="none"
                     onFocus={() => setPasswordFocused(true)}
@@ -336,6 +394,10 @@ export default function RegisterScreen() {
                     </ThemedText>
                   </View>
                 ) : null}
+
+                {fieldErrors.password ? (
+                  <ThemedText style={styles.fieldErrorText}>{fieldErrors.password}</ThemedText>
+                ) : null}
               </View>
 
               {/* Password Confirmation */}
@@ -345,16 +407,22 @@ export default function RegisterScreen() {
                   style={[
                     styles.inputContainer,
                     confirmFocused && styles.inputContainerFocused,
+                    Boolean(fieldErrors.passwordConfirmation) && styles.inputContainerError,
                   ]}>
                   <View style={styles.inputIcon}>
-                    <LockIcon color={confirmFocused ? Colors.light.primary : '#575757'} />
+                    <LockIcon color={fieldErrors.passwordConfirmation ? '#EF4444' : confirmFocused ? Colors.light.primary : '#575757'} />
                   </View>
                   <TextInput
                     style={styles.textInput}
                     placeholder="Ulangi kata sandi"
                     placeholderTextColor="#9AA0A6"
                     value={passwordConfirmation}
-                    onChangeText={setPasswordConfirmation}
+                    onChangeText={(text) => {
+                      setPasswordConfirmation(text);
+                      if (fieldErrors.passwordConfirmation)
+                        setFieldErrors((prev) => ({ ...prev, passwordConfirmation: undefined }));
+                      if (generalError) setGeneralError('');
+                    }}
                     secureTextEntry={!showConfirmPassword}
                     autoCapitalize="none"
                     onFocus={() => setConfirmFocused(true)}
@@ -367,23 +435,37 @@ export default function RegisterScreen() {
                     <EyeIcon visible={showConfirmPassword} color="#575757" />
                   </Pressable>
                 </View>
+                {fieldErrors.passwordConfirmation ? (
+                  <ThemedText style={styles.fieldErrorText}>{fieldErrors.passwordConfirmation}</ThemedText>
+                ) : null}
               </View>
 
               {/* Terms Checkbox */}
-              <Pressable
-                style={styles.checkboxRow}
-                onPress={() => setAgreeTerms(!agreeTerms)}>
-                <View
-                  style={[
-                    styles.checkbox,
-                    agreeTerms && styles.checkboxActive,
-                  ]}>
-                  {agreeTerms ? <CheckIcon /> : null}
-                </View>
-                <ThemedText style={styles.checkboxLabel} themeColor="textSecondary">
-                  Saya menyetujui Syarat & Ketentuan serta Kebijakan Privasi
-                </ThemedText>
-              </Pressable>
+              <View>
+                <Pressable
+                  style={styles.checkboxRow}
+                  onPress={() => {
+                    setAgreeTerms(!agreeTerms);
+                    if (fieldErrors.agreeTerms) setFieldErrors((prev) => ({ ...prev, agreeTerms: undefined }));
+                    if (generalError) setGeneralError('');
+                  }}>
+                  <View
+                    style={[
+                      styles.checkbox,
+                      agreeTerms && styles.checkboxActive,
+                      Boolean(fieldErrors.agreeTerms) && styles.checkboxError,
+                    ]}>
+                    {agreeTerms ? <CheckIcon /> : null}
+                  </View>
+                  <ThemedText style={styles.checkboxLabel} themeColor="textSecondary">
+                    Saya menyetujui Syarat & Ketentuan serta Kebijakan Privasi
+                  </ThemedText>
+                </Pressable>
+                {fieldErrors.agreeTerms ? (
+                  <ThemedText style={styles.fieldErrorText}>{fieldErrors.agreeTerms}</ThemedText>
+                ) : null}
+              </View>
+
 
               {/* Register Button */}
               <Pressable
@@ -534,6 +616,18 @@ const styles = StyleSheet.create({
     borderColor: Colors.light.primary,
     backgroundColor: '#FFFFFF',
   },
+  inputContainerError: {
+    borderColor: '#EF4444',
+    backgroundColor: '#FFF8F8',
+  },
+  fieldErrorText: {
+    fontFamily: Fonts.sans,
+    fontSize: 12,
+    color: '#EF4444',
+    marginTop: 4,
+    marginLeft: 2,
+    fontWeight: '500',
+  },
   inputIcon: {
     marginRight: 10,
   },
@@ -590,6 +684,9 @@ const styles = StyleSheet.create({
   checkboxActive: {
     backgroundColor: Colors.light.primary,
     borderColor: Colors.light.primary,
+  },
+  checkboxError: {
+    borderColor: '#EF4444',
   },
   checkboxLabel: {
     fontFamily: Fonts.sans,
