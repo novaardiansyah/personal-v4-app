@@ -42,6 +42,13 @@
         }
       ],
       "expo-image",
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "Izinkan aplikasi mengakses galeri foto Anda untuk memperbarui avatar profil.",
+          "cameraPermission": "Izinkan aplikasi mengakses kamera Anda untuk mengambil foto profil baru."
+        }
+      ],
       "expo-web-browser"
     ],
     "experiments": {

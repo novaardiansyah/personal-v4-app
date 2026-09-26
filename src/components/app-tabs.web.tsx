@@ -144,7 +144,7 @@ function ProfileTabIcon({ color, focused }: { color: string; focused: boolean })
 
 export default function AppTabs() {
   const pathname = usePathname();
-  const hideTabBar = pathname === '/login' || pathname === '/register';
+  const hideTabBar = pathname === '/login' || pathname === '/register' || pathname === '/edit-profile';
 
   return (
     <Tabs>

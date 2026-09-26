@@ -11,6 +11,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
+import { Image } from 'expo-image';
 import Svg, {
   Circle,
   Defs,
@@ -241,12 +242,23 @@ export default function HomeScreen() {
           {/* ─── 1. TOP APP BAR / HEADER ──────────────────────── */}
           <View style={styles.headerContainer}>
             {/* User Profile Info */}
-            <View style={styles.profileSection}>
-              <View style={styles.avatar}>
-                <ThemedText style={styles.avatarText}>
-                  {user?.name ? user.name.slice(0, 2).toUpperCase() : 'NA'}
-                </ThemedText>
-              </View>
+            <Pressable
+              style={({ pressed }) => [styles.profileSection, pressed && styles.pressed]}
+              onPress={() => router.push('/profile')}>
+              {user?.avatar_url ? (
+                <Image
+                  source={{ uri: user.avatar_url }}
+                  style={styles.avatarImage}
+                  contentFit="cover"
+                  transition={200}
+                />
+              ) : (
+                <View style={styles.avatar}>
+                  <ThemedText style={styles.avatarText}>
+                    {user?.name ? user.name.slice(0, 2).toUpperCase() : 'NA'}
+                  </ThemedText>
+                </View>
+              )}
               <View style={styles.profileTextContainer}>
                 <ThemedText style={styles.userName}>{user?.name || 'Nova Ardiansyah'}</ThemedText>
                 <Pressable
@@ -258,7 +270,7 @@ export default function HomeScreen() {
                   <CopyIcon size={13} color={theme.textSecondary} />
                 </Pressable>
               </View>
-            </View>
+            </Pressable>
 
             {/* Action Icons */}
             <View style={styles.headerActions}>
@@ -486,6 +498,13 @@ const styles = StyleSheet.create({
     backgroundColor: '#E76006',
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  avatarImage: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    borderWidth: 1.5,
+    borderColor: '#E76006',
   },
   avatarText: {
     color: '#ffffff',

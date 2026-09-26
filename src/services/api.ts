@@ -1,4 +1,4 @@
-export const API_BASE_URL = process.env.EXPO_PUBLIC_API_URL || null
+export const API_BASE_URL = process.env.EXPO_PUBLIC_API_URL || null;
 
 export interface ApiResponse<T = any> {
   success: boolean;
@@ -19,21 +19,32 @@ export interface AuthResponseData {
   user: AuthUserData;
 }
 
-async function postRequest<T>(endpoint: string, body: Record<string, any>): Promise<ApiResponse<T>> {
+async function request<T>(
+  endpoint: string,
+  options: {
+    method?: string;
+    body?: Record<string, any>;
+    token?: string | null;
+  } = {}
+): Promise<ApiResponse<T>> {
   const cleanBase = (API_BASE_URL || '').replace(/\/+$/, '');
   const cleanEndpoint = endpoint.replace(/^\/+/, '');
   const url = `${cleanBase}/${cleanEndpoint}`;
 
-  console.log('URL', url)
+  const headers: Record<string, string> = {
+    'Content-Type': 'application/json',
+    Accept: 'application/json',
+  };
+
+  if (options.token) {
+    headers.Authorization = `Bearer ${options.token}`;
+  }
 
   try {
     const response = await fetch(url, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Accept: 'application/json',
-      },
-      body: JSON.stringify(body),
+      method: options.method || 'POST',
+      headers,
+      body: options.body ? JSON.stringify(options.body) : undefined,
     });
 
     const data = await response.json().catch(() => null);
@@ -75,7 +86,10 @@ export async function loginMobileApi(credentials: {
   email: string;
   password: string;
 }): Promise<ApiResponse<AuthResponseData>> {
-  return postRequest<AuthResponseData>('auth/login', credentials);
+  return request<AuthResponseData>('auth/login', {
+    method: 'POST',
+    body: credentials,
+  });
 }
 
 /**
@@ -86,5 +100,57 @@ export async function registerMobileApi(payload: {
   email: string;
   password: string;
 }): Promise<ApiResponse<AuthResponseData>> {
-  return postRequest<AuthResponseData>('auth/register', payload);
+  return request<AuthResponseData>('auth/register', {
+    method: 'POST',
+    body: payload,
+  });
 }
+
+/**
+ * Endpoint Ambil Data Profile
+ */
+export async function getProfileMobileApi(token?: string | null): Promise<ApiResponse<{ user: AuthUserData }>> {
+  return request<{ user: AuthUserData }>('auth/profile', {
+    method: 'GET',
+    token,
+  });
+}
+
+/**
+ * Endpoint Update Profile (Nama, Email, Avatar Base64/URL)
+ */
+export async function updateProfileMobileApi(
+  payload: {
+    name: string;
+    email?: string;
+    avatar_base64?: string | null;
+    avatar_url?: string | null;
+  },
+  token?: string | null
+): Promise<ApiResponse<{ user: AuthUserData }>> {
+  return request<{ user: AuthUserData }>('auth/profile', {
+    method: 'POST',
+    body: payload,
+    token,
+  });
+}
+
+/**
+ * Endpoint Ganti Kata Sandi Mobile
+ */
+export async function changePasswordMobileApi(
+  payload: {
+    current_password: string;
+    new_password: string;
+    new_password_confirmation: string;
+  },
+  token?: string | null
+): Promise<ApiResponse<{ token?: string; user?: AuthUserData }>> {
+  return request<{ token?: string; user?: AuthUserData }>('auth/change-password', {
+    method: 'POST',
+    body: payload,
+    token,
+  });
+}
+
+

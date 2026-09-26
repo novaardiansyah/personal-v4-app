@@ -4,6 +4,7 @@ export interface User {
   id?: number | string;
   name: string;
   email: string;
+  avatar_url?: string | null;
   token?: string;
 }
 
@@ -11,6 +12,7 @@ interface AuthContextType {
   user: User | null;
   isAuthenticated: boolean;
   login: (userData: User) => void;
+  updateUser: (userData: Partial<User>) => void;
   logout: () => void;
 }
 
@@ -26,6 +28,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setIsAuthenticated(true);
   };
 
+  const updateUser = (userData: Partial<User>) => {
+    setUser((prev) => (prev ? { ...prev, ...userData } : null));
+  };
+
   const logout = () => {
     setUser(null);
     setIsAuthenticated(false);
@@ -37,6 +43,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         user,
         isAuthenticated,
         login,
+        updateUser,
         logout,
       }}>
       {children}
@@ -51,3 +58,4 @@ export function useAuth() {
   }
   return context;
 }
+
