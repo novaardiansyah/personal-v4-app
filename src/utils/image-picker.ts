@@ -1,3 +1,4 @@
+import * as ImagePicker from 'expo-image-picker';
 import { Alert, Platform } from 'react-native';
 
 export interface PickedImageResult {
@@ -5,6 +6,14 @@ export interface PickedImageResult {
   base64?: string;
   uri?: string;
   name?: string;
+}
+
+function formatErrorMessage(error: any, fallbackTitle: string): string {
+  const msg = error?.message || '';
+  if (msg.includes('Cannot find native module') || msg.includes('ExponentImagePicker')) {
+    return 'Modul native kamera/galeri belum terkompilasi ke dalam binary Android saat ini. Silakan build ulang aplikasi dengan menjalankan "npm run android" atau "npm run android:dev".';
+  }
+  return msg || fallbackTitle;
 }
 
 /**
@@ -43,15 +52,6 @@ export async function pickImageFromGallery(): Promise<PickedImageResult> {
   }
 
   try {
-    const ImagePicker = require('expo-image-picker');
-    if (!ImagePicker || !ImagePicker.launchImageLibraryAsync) {
-      Alert.alert(
-        'Modul Belum Terpasang',
-        'Modul expo-image-picker belum terpasang. Jalankan "npx expo install expo-image-picker" pada terminal.'
-      );
-      return { canceled: true };
-    }
-
     const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
     if (status !== 'granted') {
       Alert.alert(
@@ -84,7 +84,7 @@ export async function pickImageFromGallery(): Promise<PickedImageResult> {
       uri: asset.uri,
     };
   } catch (error: any) {
-    Alert.alert('Gagal Membuka Galeri', error?.message || 'Terjadi kesalahan saat membuka galeri.');
+    Alert.alert('Gagal Membuka Galeri', formatErrorMessage(error, 'Terjadi kesalahan saat membuka galeri.'));
     return { canceled: true };
   }
 }
@@ -126,15 +126,6 @@ export async function pickImageFromCamera(): Promise<PickedImageResult> {
   }
 
   try {
-    const ImagePicker = require('expo-image-picker');
-    if (!ImagePicker || !ImagePicker.launchCameraAsync) {
-      Alert.alert(
-        'Modul Belum Terpasang',
-        'Modul expo-image-picker belum terpasang. Jalankan "npx expo install expo-image-picker" pada terminal.'
-      );
-      return { canceled: true };
-    }
-
     const { status } = await ImagePicker.requestCameraPermissionsAsync();
     if (status !== 'granted') {
       Alert.alert(
@@ -166,7 +157,7 @@ export async function pickImageFromCamera(): Promise<PickedImageResult> {
       uri: asset.uri,
     };
   } catch (error: any) {
-    Alert.alert('Gagal Membuka Kamera', error?.message || 'Terjadi kesalahan saat membuka kamera.');
+    Alert.alert('Gagal Membuka Kamera', formatErrorMessage(error, 'Terjadi kesalahan saat membuka kamera.'));
     return { canceled: true };
   }
 }

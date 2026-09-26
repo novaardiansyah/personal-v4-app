@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import {
   ActivityIndicator,
   KeyboardAvoidingView,
@@ -13,7 +13,7 @@ import {
   View,
 } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
-import { useRouter } from 'expo-router';
+import { useFocusEffect, useRouter } from 'expo-router';
 import { Image } from 'expo-image';
 import Svg, { Circle, Path, Rect } from 'react-native-svg';
 
@@ -132,6 +132,7 @@ export default function EditProfileScreen() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
   const { user, updateUser, isAuthenticated } = useAuth();
+  const navigateTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // Profile data states
   const [name, setName] = useState(user?.name || '');
@@ -172,6 +173,31 @@ export default function EditProfileScreen() {
   }>({});
   const [passwordGeneralError, setPasswordGeneralError] = useState('');
   const [passwordSuccessMessage, setPasswordSuccessMessage] = useState('');
+
+  // Clear transient alert messages and errors on focus and blur/unmount
+  useFocusEffect(
+    useCallback(() => {
+      setGeneralError('');
+      setSuccessMessage('');
+      setPasswordGeneralError('');
+      setPasswordSuccessMessage('');
+      setFieldErrors({});
+      setPasswordErrors({});
+
+      return () => {
+        if (navigateTimeoutRef.current) {
+          clearTimeout(navigateTimeoutRef.current);
+          navigateTimeoutRef.current = null;
+        }
+        setGeneralError('');
+        setSuccessMessage('');
+        setPasswordGeneralError('');
+        setPasswordSuccessMessage('');
+        setFieldErrors({});
+        setPasswordErrors({});
+      };
+    }, [])
+  );
 
   // Fetch latest profile on load
   useEffect(() => {
@@ -239,6 +265,21 @@ export default function EditProfileScreen() {
     setAvatarBase64(null);
   };
 
+  // Back Navigation handler
+  const handleBack = () => {
+    if (navigateTimeoutRef.current) {
+      clearTimeout(navigateTimeoutRef.current);
+      navigateTimeoutRef.current = null;
+    }
+    setGeneralError('');
+    setSuccessMessage('');
+    setPasswordGeneralError('');
+    setPasswordSuccessMessage('');
+    setFieldErrors({});
+    setPasswordErrors({});
+    router.replace('/profile');
+  };
+
   // Save Profile (Name & Avatar)
   const handleSave = async () => {
     setGeneralError('');
@@ -292,7 +333,12 @@ export default function EditProfileScreen() {
 
       setSuccessMessage('Profil Anda berhasil diperbarui!');
 
-      setTimeout(() => {
+      if (navigateTimeoutRef.current) {
+        clearTimeout(navigateTimeoutRef.current);
+      }
+
+      navigateTimeoutRef.current = setTimeout(() => {
+        setSuccessMessage('');
         router.replace('/profile');
       }, 800);
     } catch {
@@ -396,7 +442,7 @@ export default function EditProfileScreen() {
             <View style={styles.topBar}>
               <Pressable
                 style={({ pressed }) => [styles.backButton, pressed && CommonStyles.pressed]}
-                onPress={() => router.replace('/profile')}>
+                onPress={handleBack}>
                 <ArrowLeftIcon size={20} color={Palette.dark} />
               </Pressable>
               <ThemedText style={styles.topBarTitle}>Profile Saya</ThemedText>
@@ -950,19 +996,12 @@ const styles = StyleSheet.create({
     marginRight: 10,
   },
   inputContainerDisabled: {
-    backgroundColor: '#F7F8FA',
-    borderColor: Palette.border,
-  },
-  textInput: {
-    flex: 1,
-    fontFamily: Fonts.sans,
-    fontSize: FontSize.base,
-    color: Palette.dark,
-    height: '100%',
-    paddingVertical: 0,
+    backgroundColor: '#ECEEF2',
+    borderColor: '#D1D5DB',
   },
   textInputDisabled: {
-    color: Palette.secondary,
+    color: '#6B7280',
+    fontWeight: FontWeight.medium,
   },
   lockIconBadge: {
     paddingLeft: 6,

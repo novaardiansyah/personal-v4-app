@@ -218,7 +218,7 @@ export const CommonStyles = StyleSheet.create({
   inputContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: Palette.background,
+    backgroundColor: Palette.card,
     borderWidth: 1.2,
     borderColor: Palette.borderDark,
     borderRadius: BorderRadius.lg,
@@ -228,6 +228,7 @@ export const CommonStyles = StyleSheet.create({
   inputContainerFocused: {
     borderColor: Palette.primary,
     backgroundColor: Palette.card,
+    borderWidth: 1.5,
   },
   inputContainerError: {
     borderColor: Palette.danger,
