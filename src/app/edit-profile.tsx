@@ -5,7 +5,6 @@ import {
   Platform,
   Pressable,
   ScrollView,
-  StyleSheet,
   Text,
   TextInput,
   View,
@@ -16,15 +15,7 @@ import { Image } from 'expo-image';
 
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
-import {
-  BorderRadius,
-  CommonStyles,
-  FontSize,
-  FontWeight,
-  Fonts,
-  Palette,
-  Spacing,
-} from '@/constants/theme';
+import { CommonStyles, Palette } from '@/constants/theme';
 import { useAuth } from '@/context/auth-context';
 import {
   changePasswordMobileApi,
@@ -42,6 +33,7 @@ import {
 } from '@/components/icons';
 import { AvatarPickerModal } from '@/components/profile/avatar-picker-modal';
 import { PasswordInput } from '@/components/auth/password-input';
+import { styles } from '@/components/profile/edit-profile.styles';
 
 export default function EditProfileScreen() {
   const router = useRouter();
@@ -551,210 +543,3 @@ export default function EditProfileScreen() {
     </ThemedView>
   );
 }
-
-const styles = StyleSheet.create({
-  keyboardAvoid: {
-    flex: 1,
-  },
-  scrollContent: {
-    paddingHorizontal: Spacing.three,
-    paddingTop: Spacing.two,
-    paddingBottom: 140,
-  },
-  topBar: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    marginBottom: Spacing.three,
-    paddingVertical: Spacing.two,
-  },
-  backButton: {
-    width: 40,
-    height: 40,
-    borderRadius: BorderRadius.full,
-    backgroundColor: Palette.card,
-    borderWidth: 1,
-    borderColor: Palette.border,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  topBarTitle: {
-    fontFamily: Fonts.sans,
-    fontSize: FontSize.lg,
-    fontWeight: FontWeight.bold,
-    color: Palette.dark,
-  },
-  placeholderButton: {
-    width: 40,
-  },
-  errorBanner: {
-    backgroundColor: Palette.dangerBg,
-    borderColor: Palette.dangerBorder,
-    borderWidth: 1,
-    borderRadius: BorderRadius.md,
-    paddingHorizontal: 14,
-    paddingVertical: 10,
-    marginBottom: Spacing.three,
-  },
-  errorText: {
-    fontFamily: Fonts.sans,
-    fontSize: FontSize.sm + 1,
-    color: Palette.dangerDark,
-    fontWeight: FontWeight.medium,
-  },
-  successBanner: {
-    backgroundColor: Palette.successBg,
-    borderColor: Palette.successBorder,
-    borderWidth: 1,
-    borderRadius: BorderRadius.md,
-    paddingHorizontal: 14,
-    paddingVertical: 10,
-    marginBottom: Spacing.three,
-  },
-  successText: {
-    fontFamily: Fonts.sans,
-    fontSize: FontSize.sm + 1,
-    color: Palette.successText,
-    fontWeight: FontWeight.semibold,
-  },
-  avatarCard: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: Palette.card,
-    borderRadius: BorderRadius.xl,
-    padding: Spacing.four,
-    borderWidth: 1,
-    borderColor: Palette.border,
-    marginBottom: Spacing.three,
-    gap: 12,
-  },
-  avatarWrapper: {
-    position: 'relative',
-    width: 90,
-    height: 90,
-  },
-  avatarImage: {
-    width: 90,
-    height: 90,
-    borderRadius: BorderRadius.full,
-    borderWidth: 2,
-    borderColor: Palette.border,
-  },
-  avatarPlaceholder: {
-    width: 90,
-    height: 90,
-    borderRadius: BorderRadius.full,
-    backgroundColor: Palette.primary,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  avatarText: {
-    fontFamily: Fonts.sans,
-    fontSize: FontSize['3xl'],
-    fontWeight: FontWeight.bold,
-    color: Palette.white,
-  },
-  cameraBadge: {
-    position: 'absolute',
-    bottom: 0,
-    right: 0,
-    backgroundColor: Palette.primary,
-    width: 28,
-    height: 28,
-    borderRadius: BorderRadius.full,
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderWidth: 2,
-    borderColor: Palette.white,
-  },
-  changeAvatarBtn: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 6,
-    paddingHorizontal: 14,
-    paddingVertical: 7,
-    borderRadius: BorderRadius.full,
-    backgroundColor: Palette.primaryLight,
-  },
-  changeAvatarBtnText: {
-    fontFamily: Fonts.sans,
-    fontSize: FontSize.xs + 0.5,
-    fontWeight: FontWeight.semibold,
-    color: Palette.primary,
-  },
-  formCard: {
-    backgroundColor: Palette.card,
-    borderRadius: BorderRadius.xl,
-    padding: Spacing.four,
-    borderWidth: 1,
-    borderColor: Palette.border,
-    marginBottom: Spacing.three,
-    gap: 14,
-  },
-  passwordCard: {
-    marginTop: 4,
-  },
-  cardHeaderRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-  },
-  cardHeaderIcon: {
-    width: 32,
-    height: 32,
-    borderRadius: BorderRadius.md,
-    backgroundColor: Palette.primaryLight,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  sectionTitle: {
-    fontFamily: Fonts.sans,
-    fontSize: FontSize.base,
-    fontWeight: FontWeight.bold,
-    color: Palette.dark,
-  },
-  inputGroup: {
-    gap: 6,
-  },
-  labelRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-  },
-  disabledBadge: {
-    fontFamily: Fonts.sans,
-    fontSize: FontSize.xs,
-    color: Palette.secondary,
-    fontStyle: 'italic',
-  },
-  inputIcon: {
-    marginRight: 10,
-  },
-  inputContainerDisabled: {
-    backgroundColor: '#ECEEF2',
-    borderColor: '#D1D5DB',
-  },
-  textInput: {
-    flex: 1,
-    fontFamily: Fonts.sans,
-    fontSize: FontSize.base,
-    color: Palette.dark,
-    height: '100%',
-    paddingVertical: 0,
-  },
-  textInputDisabled: {
-    color: '#6B7280',
-    fontWeight: FontWeight.medium,
-  },
-  lockIconBadge: {
-    paddingLeft: 6,
-  },
-  saveButton: {
-    marginTop: 6,
-  },
-  passwordButton: {
-    marginTop: 6,
-    backgroundColor: Palette.primary,
-    borderColor: Palette.primary,
-  },
-});
