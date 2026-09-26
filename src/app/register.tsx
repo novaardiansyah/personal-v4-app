@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import {
   ActivityIndicator,
-  Image,
   KeyboardAvoidingView,
   Platform,
   Pressable,
@@ -21,13 +20,6 @@ import { Colors, Fonts, MaxContentWidth, Spacing } from '@/constants/theme';
 import { useAuth } from '@/context/auth-context';
 
 // --- Vector Icons ---
-function ArrowLeftIcon({ color = '#242424', size = 20 }: { color?: string; size?: number }) {
-  return (
-    <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
-      <Path d="M19 12H5M12 19l-7-7 7-7" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-    </Svg>
-  );
-}
 
 function UserIcon({ color = '#575757', size = 20 }: { color?: string; size?: number }) {
   return (
@@ -218,28 +210,8 @@ export default function RegisterScreen() {
             showsVerticalScrollIndicator={false}
             contentContainerStyle={styles.scrollContent}
             keyboardShouldPersistTaps="handled">
-            {/* Top Navigation */}
-            <View style={styles.topBar}>
-              <Pressable
-                style={({ pressed }) => [
-                  styles.backButton,
-                  pressed && styles.backButtonPressed,
-                ]}
-                onPress={() => router.back()}>
-                <ArrowLeftIcon />
-                <ThemedText style={styles.backButtonText}>Kembali ke Masuk</ThemedText>
-              </Pressable>
-            </View>
-
             {/* Header */}
             <View style={styles.header}>
-              <View style={styles.logoWrapper}>
-                <Image
-                  source={require('@/assets/images/logo-color.png')}
-                  style={styles.logo}
-                  resizeMode="contain"
-                />
-              </View>
               <ThemedText style={styles.title}>Buat Akun Baru</ThemedText>
               <ThemedText style={styles.subtitle} themeColor="textSecondary">
                 Lengkapi formulir di bawah untuk mulai mengelola keuangan Anda
@@ -462,61 +434,13 @@ const styles = StyleSheet.create({
   },
   scrollContent: {
     flexGrow: 1,
+    justifyContent: 'center',
     paddingHorizontal: Spacing.four,
-    paddingTop: Spacing.two,
-    paddingBottom: Spacing.five,
-  },
-  topBar: {
-    marginBottom: Spacing.two,
-  },
-  backButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-    paddingVertical: 8,
-    alignSelf: 'flex-start',
-  },
-  backButtonPressed: {
-    opacity: 0.6,
-  },
-  backButtonText: {
-    fontFamily: Fonts.sans,
-    fontSize: 14,
-    fontWeight: '600',
-    color: '#242424',
+    paddingVertical: Spacing.five,
   },
   header: {
     alignItems: 'center',
     marginBottom: Spacing.four,
-  },
-  logoWrapper: {
-    width: 60,
-    height: 60,
-    borderRadius: 18,
-    backgroundColor: '#FFFFFF',
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginBottom: 10,
-    borderWidth: 1,
-    borderColor: '#ECEEF2',
-    ...Platform.select({
-      ios: {
-        shadowColor: '#000000',
-        shadowOffset: { width: 0, height: 4 },
-        shadowOpacity: 0.05,
-        shadowRadius: 8,
-      },
-      android: {
-        elevation: 2,
-      },
-      web: {
-        boxShadow: '0 4px 14px rgba(0, 0, 0, 0.04)',
-      },
-    }),
-  },
-  logo: {
-    width: 38,
-    height: 38,
   },
   title: {
     fontFamily: Fonts.sans,
