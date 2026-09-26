@@ -42,7 +42,6 @@ export default function LoginScreen() {
   const [generalError, setGeneralError] = useState('');
   const [emailFocused, setEmailFocused] = useState(false);
 
-  // Jika sudah login, cegah akses login dan arahkan langsung ke Beranda
   useEffect(() => {
     if (!isAuthLoading && isAuthenticated) {
       router.replace('/');
@@ -131,7 +130,6 @@ export default function LoginScreen() {
             showsVerticalScrollIndicator={false}
             contentContainerStyle={styles.scrollContent}
             keyboardShouldPersistTaps="handled">
-            {/* Header */}
             <View style={styles.header}>
               <ThemedText style={styles.title}>Selamat Datang</ThemedText>
               <ThemedText style={styles.subtitle} themeColor="textSecondary">
@@ -139,16 +137,13 @@ export default function LoginScreen() {
               </ThemedText>
             </View>
 
-            {/* General Error Banner */}
             {generalError ? (
               <View style={styles.errorBanner}>
                 <ThemedText style={styles.errorText}>{generalError}</ThemedText>
               </View>
             ) : null}
 
-            {/* Form Inputs */}
             <View style={styles.form}>
-              {/* Email Input */}
               <View style={styles.inputGroup}>
                 <ThemedText style={CommonStyles.inputLabel}>Email</ThemedText>
                 <View
@@ -182,7 +177,6 @@ export default function LoginScreen() {
                 ) : null}
               </View>
 
-              {/* Password Input */}
               <PasswordInput
                 label="Kata Sandi"
                 placeholder="Masukkan kata sandi"
@@ -195,7 +189,6 @@ export default function LoginScreen() {
                 error={fieldErrors.password}
               />
 
-              {/* Remember Me & Forgot Password */}
               <View style={CommonStyles.rowBetween}>
                 <Pressable
                   style={styles.checkboxRow}
@@ -217,7 +210,6 @@ export default function LoginScreen() {
                 </Pressable>
               </View>
 
-              {/* Login Button */}
               <Pressable
                 style={({ pressed }) => [
                   CommonStyles.buttonPrimary,
@@ -234,7 +226,6 @@ export default function LoginScreen() {
               </Pressable>
             </View>
 
-            {/* Footer: Register Link */}
             <View style={styles.footer}>
               <ThemedText style={styles.footerText} themeColor="textSecondary">
                 Belum punya akun?{' '}

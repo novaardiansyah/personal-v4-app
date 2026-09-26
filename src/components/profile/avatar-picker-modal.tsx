@@ -40,7 +40,6 @@ export function AvatarPickerModal({
                   paddingBottom: Math.max(insets.bottom, 24) + 20,
                 },
               ]}>
-              {/* Modal Header */}
               <View style={styles.modalHeader}>
                 <View style={styles.modalHandle} />
                 <ThemedText style={styles.modalTitle}>Foto Profil</ThemedText>
@@ -49,7 +48,6 @@ export function AvatarPickerModal({
                 </ThemedText>
               </View>
 
-              {/* Options List */}
               <View style={styles.modalOptions}>
                 <Pressable
                   style={({ pressed }) => [styles.modalOptionItem, pressed && CommonStyles.pressed]}
@@ -92,7 +90,6 @@ export function AvatarPickerModal({
                 ) : null}
               </View>
 
-              {/* Cancel Button */}
               <Pressable
                 style={({ pressed }) => [styles.modalCancelBtn, pressed && CommonStyles.pressed]}
                 onPress={onClose}>

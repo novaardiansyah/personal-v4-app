@@ -13,7 +13,6 @@ export default function TransactionsScreen() {
         <ScrollView
           showsVerticalScrollIndicator={false}
           contentContainerStyle={styles.scrollContent}>
-          {/* Header */}
           <View style={styles.headerContainer}>
             <ThemedText style={styles.headerTitle}>Transaksi</ThemedText>
             <ThemedText style={styles.headerSubtitle} themeColor="textSecondary">
@@ -21,7 +20,6 @@ export default function TransactionsScreen() {
             </ThemedText>
           </View>
 
-          {/* Placeholder Card */}
           <View style={styles.card}>
             <ThemedText style={styles.cardTitle}>Mutasi Rekening</ThemedText>
             <ThemedText style={styles.cardDesc} themeColor="textSecondary">

@@ -80,9 +80,6 @@ async function request<T>(
   }
 }
 
-/**
- * Endpoint Login Mobile
- */
 export async function loginMobileApi(credentials: {
   email: string;
   password: string;
@@ -93,9 +90,6 @@ export async function loginMobileApi(credentials: {
   });
 }
 
-/**
- * Endpoint Registrasi Mobile
- */
 export async function registerMobileApi(payload: {
   name: string;
   email: string;
@@ -107,9 +101,6 @@ export async function registerMobileApi(payload: {
   });
 }
 
-/**
- * Endpoint Ambil Data Profile
- */
 export async function getProfileMobileApi(token?: string | null): Promise<ApiResponse<{ user: AuthUserData }>> {
   return request<{ user: AuthUserData }>('auth/profile', {
     method: 'GET',
@@ -117,9 +108,6 @@ export async function getProfileMobileApi(token?: string | null): Promise<ApiRes
   });
 }
 
-/**
- * Endpoint Update Profile (Nama, Email, Avatar Base64/URL)
- */
 export async function updateProfileMobileApi(
   payload: {
     name: string;
@@ -136,9 +124,6 @@ export async function updateProfileMobileApi(
   });
 }
 
-/**
- * Endpoint Ganti Kata Sandi Mobile
- */
 export async function changePasswordMobileApi(
   payload: {
     current_password: string;
@@ -154,15 +139,9 @@ export async function changePasswordMobileApi(
   });
 }
 
-/**
- * Endpoint Logout Mobile
- */
 export async function logoutMobileApi(token?: string | null): Promise<ApiResponse<null>> {
   return request<null>('auth/logout', {
     method: 'POST',
     token,
   });
 }
-
-
-

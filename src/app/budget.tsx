@@ -13,7 +13,6 @@ export default function BudgetScreen() {
         <ScrollView
           showsVerticalScrollIndicator={false}
           contentContainerStyle={styles.scrollContent}>
-          {/* Header */}
           <View style={styles.headerContainer}>
             <ThemedText style={styles.headerTitle}>Anggaran</ThemedText>
             <ThemedText style={styles.headerSubtitle} themeColor="textSecondary">
@@ -21,7 +20,6 @@ export default function BudgetScreen() {
             </ThemedText>
           </View>
 
-          {/* Placeholder Card */}
           <View style={styles.card}>
             <ThemedText style={styles.cardTitle}>Total Anggaran Bulan Ini</ThemedText>
             <ThemedText style={styles.cardAmount}>Rp0,00</ThemedText>

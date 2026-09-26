@@ -129,7 +129,6 @@ function ProfileTabIcon({ color, focused }: { color: string | any; focused: bool
         r="4"
         stroke={color}
         strokeWidth={focused ? 2.2 : 1.8}
-        fill={focused ? 'rgba(231, 96, 6, 0.15)' : 'none'}
       />
     </Svg>
   );
@@ -139,7 +138,6 @@ export default function AppTabs() {
   const insets = useSafeAreaInsets();
   const bottomInset = insets.bottom;
 
-  // Pastikan posisi tab bar naik lebih tinggi di atas navigation bar Android & iOS
   const barHeight = Platform.OS === 'ios'
     ? 66 + bottomInset
     : 68 + (bottomInset > 0 ? bottomInset : 16);
@@ -165,7 +163,6 @@ export default function AppTabs() {
         tabBarItemStyle: styles.tabBarItem,
         tabBarLabelStyle: styles.tabBarLabel,
       }}>
-      {/* Auth screens (hidden from tab bar) */}
       <Tabs.Screen
         name="login"
         options={{
@@ -222,7 +219,6 @@ export default function AppTabs() {
           tabBarIcon: ({ color, focused }) => <ProfileTabIcon color={color} focused={focused} />,
         }}
       />
-      {/* Hide legacy explore if present */}
       <Tabs.Screen
         name="explore"
         options={{
@@ -250,7 +246,7 @@ const styles = StyleSheet.create({
         elevation: 8,
       },
       web: {
-        boxShadow: '0 -2px 10px rgba(0, 0, 0, 0.03)',
+        boxShadow: '0 -2px 10px rgba(0, 0, 0, 0.04)',
       },
     }),
   },

@@ -1,8 +1,9 @@
 import React from 'react';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { Platform, Pressable, StyleSheet, Text, View } from 'react-native';
+
 import { ThemedText } from '@/components/themed-text';
-import { BorderRadius, FontSize, FontWeight, Fonts, Palette, Spacing } from '@/constants/theme';
 import { ChevronRightIcon } from '@/components/icons';
+import { Fonts, Spacing } from '@/constants/theme';
 
 export interface TransactionItem {
   id: string;
@@ -24,17 +25,15 @@ export function RecentTransactionsCard({
 }: RecentTransactionsCardProps) {
   return (
     <View style={styles.transactionListCard}>
-      {/* Card Header */}
       <Pressable
         style={({ pressed }) => [styles.activityCardHeader, pressed && styles.pressed]}
         onPress={onViewAll}>
         <ThemedText style={styles.activityCardTitle}>Aktivitas Terkini</ThemedText>
-        <ChevronRightIcon size={14} color={Palette.secondary} />
+        <ChevronRightIcon size={14} color="#575757" />
       </Pressable>
 
       <View style={styles.transactionDivider} />
 
-      {/* Transaction Items */}
       {transactions.map((tx, idx) => (
         <View key={tx.id}>
           <View style={styles.transactionRow}>
@@ -54,7 +53,7 @@ export function RecentTransactionsCard({
                 style={[
                   styles.txAmount,
                   {
-                    color: tx.type === 'income' ? Palette.success : Palette.dark,
+                    color: tx.type === 'income' ? '#22C55E' : '#242424',
                   },
                 ]}>
                 {tx.amount}
@@ -65,13 +64,11 @@ export function RecentTransactionsCard({
         </View>
       ))}
 
-      {/* Card Footer */}
       <View style={styles.transactionDivider} />
       <Pressable
         style={({ pressed }) => [styles.activityCardFooter, pressed && styles.pressed]}
         onPress={onViewAll}>
-        <Text style={styles.footerLinkText}>Lihat Semua Transaksi</Text>
-        <ChevronRightIcon size={12} color={Palette.primary} />
+        <Text style={styles.footerText}>Lihat Selengkapnya</Text>
       </Pressable>
     </View>
   );
@@ -79,78 +76,92 @@ export function RecentTransactionsCard({
 
 const styles = StyleSheet.create({
   transactionListCard: {
-    borderRadius: BorderRadius['2xl'],
-    backgroundColor: Palette.card,
+    borderRadius: 14,
+    backgroundColor: '#FFFFFF',
+    paddingHorizontal: Spacing.three,
     borderWidth: 1,
-    borderColor: Palette.border,
-    overflow: 'hidden',
+    borderColor: '#ECEEF2',
+    ...Platform.select({
+      ios: {
+        shadowColor: '#000000',
+        shadowOffset: { width: 0, height: 1 },
+        shadowOpacity: 0.005,
+        shadowRadius: 2,
+      },
+      android: {
+        elevation: 0,
+      },
+      web: {
+        boxShadow: 'none',
+      },
+    }),
   },
   activityCardHeader: {
     flexDirection: 'row',
-    alignItems: 'center',
     justifyContent: 'space-between',
-    paddingHorizontal: Spacing.four,
-    paddingVertical: 14,
+    alignItems: 'center',
+    paddingVertical: Spacing.three - 2,
   },
   activityCardTitle: {
     fontFamily: Fonts.sans,
-    fontSize: FontSize.md,
-    fontWeight: FontWeight.bold,
-  },
-  transactionDivider: {
-    height: 1,
-    backgroundColor: Palette.muted,
+    fontSize: 15,
+    fontWeight: '700',
   },
   transactionRow: {
     flexDirection: 'row',
-    alignItems: 'center',
     justifyContent: 'space-between',
-    paddingHorizontal: Spacing.four,
-    paddingVertical: 12,
+    alignItems: 'center',
+    paddingVertical: 14,
   },
   txLeft: {
-    flex: 1,
-    gap: 4,
+    gap: 8,
   },
   txHeaderGroup: {
     gap: 1,
   },
   txTitle: {
     fontFamily: Fonts.sans,
-    fontSize: FontSize.sm + 1,
-    fontWeight: FontWeight.semibold,
+    fontSize: 13,
+    fontWeight: '600',
+    lineHeight: 16,
   },
   txSubtitle: {
     fontFamily: Fonts.sans,
-    fontSize: FontSize.xs + 0.5,
+    fontSize: 11.5,
+    lineHeight: 14,
   },
   txDate: {
     fontFamily: Fonts.sans,
-    fontSize: FontSize.xs,
-    marginTop: 2,
+    fontSize: 10.5,
+    lineHeight: 13,
+    opacity: 0.85,
   },
   txRight: {
     alignItems: 'flex-end',
+    gap: 2,
   },
   txAmount: {
     fontFamily: Fonts.sans,
-    fontSize: FontSize.sm + 1,
-    fontWeight: FontWeight.bold,
+    fontSize: 13,
+    fontWeight: '700',
+    fontVariant: ['tabular-nums'],
+  },
+  transactionDivider: {
+    height: 1,
+    backgroundColor: '#F0F1F5',
   },
   activityCardFooter: {
-    flexDirection: 'row',
+    paddingVertical: Spacing.three - 2,
     alignItems: 'center',
     justifyContent: 'center',
-    gap: 6,
-    paddingVertical: 13,
   },
-  footerLinkText: {
+  footerText: {
     fontFamily: Fonts.sans,
-    fontSize: FontSize.sm,
-    fontWeight: FontWeight.semibold,
-    color: Palette.primary,
+    fontSize: 13,
+    fontWeight: '600',
+    color: '#E76006',
   },
   pressed: {
-    opacity: 0.7,
+    opacity: 0.75,
   },
 });

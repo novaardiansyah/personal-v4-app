@@ -37,7 +37,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
-  // Restore stored session on mount
   useEffect(() => {
     let isMounted = true;
 
@@ -53,7 +52,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           setUser(restoredUser);
           setIsAuthenticated(true);
 
-          // Verify with latest profile in background
           getProfileMobileApi(stored.token)
             .then((res) => {
               if (res.success && res.data?.user && isMounted) {
@@ -78,7 +76,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             .catch(() => {});
         }
       } catch {
-        // Fail-safe
       } finally {
         if (isMounted) {
           setIsLoading(false);
@@ -159,5 +156,3 @@ export function useAuth() {
   }
   return context;
 }
-
-

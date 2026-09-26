@@ -48,16 +48,13 @@ export default function EditProfileScreen() {
   const { user, updateUser, isAuthenticated } = useAuth();
   const navigateTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  // Profile data states
   const [name, setName] = useState(user?.name || '');
   const [email, setEmail] = useState(user?.email || '');
   const [avatarPreview, setAvatarPreview] = useState<string | null>(user?.avatar_url || null);
   const [avatarBase64, setAvatarBase64] = useState<string | null>(null);
 
-  // Avatar action modal state
   const [isAvatarModalVisible, setIsAvatarModalVisible] = useState(false);
 
-  // Profile submission & loading states
   const [isLoading, setIsLoading] = useState(false);
   const [isFetching, setIsFetching] = useState(false);
   const [nameFocused, setNameFocused] = useState(false);
@@ -66,7 +63,6 @@ export default function EditProfileScreen() {
   const [generalError, setGeneralError] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
 
-  // Change Password states
   const [currentPassword, setCurrentPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -80,7 +76,6 @@ export default function EditProfileScreen() {
   const [passwordGeneralError, setPasswordGeneralError] = useState('');
   const [passwordSuccessMessage, setPasswordSuccessMessage] = useState('');
 
-  // Clear transient alert messages and errors on focus and blur/unmount
   useFocusEffect(
     useCallback(() => {
       setGeneralError('');
@@ -105,7 +100,6 @@ export default function EditProfileScreen() {
     }, [])
   );
 
-  // Fetch latest profile on load
   useEffect(() => {
     if (!isAuthenticated) {
       router.replace('/login');
@@ -136,7 +130,6 @@ export default function EditProfileScreen() {
     }
   }, [isAuthenticated, user?.token]);
 
-  // Gallery Picker handler
   const handlePickGallery = async () => {
     setIsAvatarModalVisible(false);
     try {
@@ -150,7 +143,6 @@ export default function EditProfileScreen() {
     }
   };
 
-  // Camera Picker handler
   const handlePickCamera = async () => {
     setIsAvatarModalVisible(false);
     try {
@@ -164,14 +156,12 @@ export default function EditProfileScreen() {
     }
   };
 
-  // Remove Avatar handler
   const handleRemoveAvatar = () => {
     setIsAvatarModalVisible(false);
     setAvatarPreview(null);
     setAvatarBase64(null);
   };
 
-  // Back Navigation handler
   const handleBack = () => {
     if (navigateTimeoutRef.current) {
       clearTimeout(navigateTimeoutRef.current);
@@ -186,7 +176,6 @@ export default function EditProfileScreen() {
     router.replace('/profile');
   };
 
-  // Save Profile (Name & Avatar)
   const handleSave = async () => {
     setGeneralError('');
     setSuccessMessage('');
@@ -254,7 +243,6 @@ export default function EditProfileScreen() {
     }
   };
 
-  // Change Password Submission
   const handleChangePassword = async () => {
     setPasswordGeneralError('');
     setPasswordSuccessMessage('');
@@ -345,7 +333,6 @@ export default function EditProfileScreen() {
             automaticallyAdjustKeyboardInsets={true}
             contentContainerStyle={styles.scrollContent}
             keyboardShouldPersistTaps="handled">
-            {/* Top Navigation Bar */}
             <View style={styles.topBar}>
               <Pressable
                 style={({ pressed }) => [styles.backButton, pressed && CommonStyles.pressed]}
@@ -356,7 +343,6 @@ export default function EditProfileScreen() {
               <View style={styles.placeholderButton} />
             </View>
 
-            {/* Notification Banners */}
             {generalError ? (
               <View style={styles.errorBanner}>
                 <ThemedText style={styles.errorText}>{generalError}</ThemedText>
@@ -369,7 +355,6 @@ export default function EditProfileScreen() {
               </View>
             ) : null}
 
-            {/* Avatar Section Card */}
             <View style={styles.avatarCard}>
               <Pressable
                 style={({ pressed }) => [styles.avatarWrapper, pressed && CommonStyles.pressed]}
@@ -404,11 +389,9 @@ export default function EditProfileScreen() {
               </Pressable>
             </View>
 
-            {/* Form Fields Card: Data Pribadi */}
             <View style={styles.formCard}>
               <ThemedText style={styles.sectionTitle}>Data Pribadi</ThemedText>
 
-              {/* Name Input */}
               <View style={styles.inputGroup}>
                 <ThemedText style={CommonStyles.inputLabel}>Nama Lengkap</ThemedText>
                 <View
@@ -440,7 +423,6 @@ export default function EditProfileScreen() {
                 ) : null}
               </View>
 
-              {/* Email Input (Disabled / Read-Only) */}
               <View style={styles.inputGroup}>
                 <View style={styles.labelRow}>
                   <ThemedText style={CommonStyles.inputLabel}>Alamat Email</ThemedText>
@@ -462,7 +444,6 @@ export default function EditProfileScreen() {
                 </View>
               </View>
 
-              {/* Save Profile Button */}
               <Pressable
                 style={({ pressed }) => [
                   CommonStyles.buttonPrimary,
@@ -480,7 +461,6 @@ export default function EditProfileScreen() {
               </Pressable>
             </View>
 
-            {/* Form Fields Card: Ganti Kata Sandi */}
             <View style={[styles.formCard, styles.passwordCard]}>
               <View style={styles.cardHeaderRow}>
                 <View style={styles.cardHeaderIcon}>
@@ -489,7 +469,6 @@ export default function EditProfileScreen() {
                 <ThemedText style={styles.sectionTitle}>Ganti Kata Sandi</ThemedText>
               </View>
 
-              {/* Password Feedback Banners */}
               {passwordGeneralError ? (
                 <View style={styles.errorBanner}>
                   <ThemedText style={styles.errorText}>{passwordGeneralError}</ThemedText>
@@ -502,7 +481,6 @@ export default function EditProfileScreen() {
                 </View>
               ) : null}
 
-              {/* Current Password */}
               <PasswordInput
                 label="Kata Sandi Saat Ini"
                 placeholder="Masukkan kata sandi saat ini"
@@ -516,7 +494,6 @@ export default function EditProfileScreen() {
                 error={passwordErrors.current_password}
               />
 
-              {/* New Password */}
               <PasswordInput
                 label="Kata Sandi Baru"
                 placeholder="Minimal 6 karakter"
@@ -530,7 +507,6 @@ export default function EditProfileScreen() {
                 error={passwordErrors.new_password}
               />
 
-              {/* Confirm New Password */}
               <PasswordInput
                 label="Konfirmasi Kata Sandi Baru"
                 placeholder="Ulangi kata sandi baru"
@@ -544,7 +520,6 @@ export default function EditProfileScreen() {
                 error={passwordErrors.new_password_confirmation}
               />
 
-              {/* Change Password Button */}
               <Pressable
                 style={({ pressed }) => [
                   CommonStyles.buttonSecondary,
@@ -564,7 +539,6 @@ export default function EditProfileScreen() {
           </ScrollView>
         </KeyboardAvoidingView>
 
-        {/* Modal Bottom Sheet untuk Aksi Avatar */}
         <AvatarPickerModal
           visible={isAvatarModalVisible}
           avatarPreview={avatarPreview}

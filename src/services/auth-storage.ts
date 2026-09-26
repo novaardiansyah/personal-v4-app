@@ -10,9 +10,6 @@ export interface StoredAuthSession {
 
 const AUTH_STORAGE_KEY = '@personal_v4_auth_session';
 
-/**
- * Cek apakah session telah melewati masa kedaluwarsa (7 hari).
- */
 export function isSessionExpired(session: StoredAuthSession | null): boolean {
   if (!session || !session.token) {
     return true;
@@ -38,9 +35,6 @@ export function isSessionExpired(session: StoredAuthSession | null): boolean {
   return false;
 }
 
-/**
- * Simpan sesi autentikasi dan token ke local storage (7 hari).
- */
 export async function saveAuthSession(data: {
   user: User;
   token: string;
@@ -48,7 +42,6 @@ export async function saveAuthSession(data: {
 }): Promise<void> {
   try {
     const now = new Date();
-    // Default expired 7 hari jika tidak ada tanggal dari API
     const defaultExpiry = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000).toISOString();
 
     const session: StoredAuthSession = {
@@ -62,14 +55,9 @@ export async function saveAuthSession(data: {
     };
 
     await AsyncStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify(session));
-  } catch {
-    // Fail-safe jika storage tidak dapat ditulis
-  }
+  } catch {}
 }
 
-/**
- * Ambil sesi autentikasi yang tersimpan.
- */
 export async function getAuthSession(): Promise<StoredAuthSession | null> {
   try {
     const raw = await AsyncStorage.getItem(AUTH_STORAGE_KEY);
@@ -89,13 +77,8 @@ export async function getAuthSession(): Promise<StoredAuthSession | null> {
   }
 }
 
-/**
- * Hapus sesi autentikasi dari local storage.
- */
 export async function clearAuthSession(): Promise<void> {
   try {
     await AsyncStorage.removeItem(AUTH_STORAGE_KEY);
-  } catch {
-    // Fail-safe
-  }
+  } catch {}
 }

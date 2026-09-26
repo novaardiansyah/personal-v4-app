@@ -53,7 +53,6 @@ export default function RegisterScreen() {
   const [nameFocused, setNameFocused] = useState(false);
   const [emailFocused, setEmailFocused] = useState(false);
 
-  // Jika sudah login, cegah akses register dan arahkan langsung ke Beranda
   useEffect(() => {
     if (!isAuthLoading && isAuthenticated) {
       router.replace('/');
@@ -211,7 +210,6 @@ export default function RegisterScreen() {
             showsVerticalScrollIndicator={false}
             contentContainerStyle={styles.scrollContent}
             keyboardShouldPersistTaps="handled">
-            {/* Header */}
             <View style={styles.header}>
               <ThemedText style={styles.title}>Buat Akun Baru</ThemedText>
               <ThemedText style={styles.subtitle} themeColor="textSecondary">
@@ -219,7 +217,6 @@ export default function RegisterScreen() {
               </ThemedText>
             </View>
 
-            {/* Notification Banner */}
             {generalError ? (
               <View style={styles.errorBanner}>
                 <ThemedText style={styles.errorText}>{generalError}</ThemedText>
@@ -232,9 +229,7 @@ export default function RegisterScreen() {
               </View>
             ) : null}
 
-            {/* Form */}
             <View style={styles.form}>
-              {/* Full Name */}
               <View style={styles.inputGroup}>
                 <ThemedText style={CommonStyles.inputLabel}>Nama Lengkap</ThemedText>
                 <View
@@ -266,7 +261,6 @@ export default function RegisterScreen() {
                 ) : null}
               </View>
 
-              {/* Email */}
               <View style={styles.inputGroup}>
                 <ThemedText style={CommonStyles.inputLabel}>Alamat Email</ThemedText>
                 <View
@@ -300,7 +294,6 @@ export default function RegisterScreen() {
                 ) : null}
               </View>
 
-              {/* Password */}
               <View>
                 <PasswordInput
                   label="Kata Sandi"
@@ -314,7 +307,6 @@ export default function RegisterScreen() {
                   error={fieldErrors.password}
                 />
 
-                {/* Password strength meter */}
                 {password.length > 0 ? (
                   <View style={styles.strengthContainer}>
                     <View style={styles.strengthBarBackground}>
@@ -339,7 +331,6 @@ export default function RegisterScreen() {
                 ) : null}
               </View>
 
-              {/* Password Confirmation */}
               <PasswordInput
                 label="Konfirmasi Kata Sandi"
                 placeholder="Ulangi kata sandi"
@@ -353,7 +344,6 @@ export default function RegisterScreen() {
                 error={fieldErrors.passwordConfirmation}
               />
 
-              {/* Terms Checkbox */}
               <View>
                 <Pressable
                   style={styles.checkboxRow}
@@ -379,7 +369,6 @@ export default function RegisterScreen() {
                 ) : null}
               </View>
 
-              {/* Register Button */}
               <Pressable
                 style={({ pressed }) => [
                   CommonStyles.buttonPrimary,
@@ -396,7 +385,6 @@ export default function RegisterScreen() {
               </Pressable>
             </View>
 
-            {/* Footer */}
             <View style={styles.footer}>
               <ThemedText style={styles.footerText} themeColor="textSecondary">
                 Sudah punya akun?{' '}

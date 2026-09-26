@@ -3,11 +3,7 @@ import { Palette } from './colors';
 import { Fonts, FontSize, FontWeight } from './typography';
 import { BorderRadius, BottomTabInset, MaxContentWidth, Spacing } from './spacing';
 
-/**
- * Common reusable styles across screens and components
- */
 export const CommonStyles = StyleSheet.create({
-  // Containers
   screenContainer: {
     flex: 1,
     backgroundColor: Palette.background,
@@ -23,8 +19,6 @@ export const CommonStyles = StyleSheet.create({
     paddingTop: Spacing.three,
     paddingBottom: BottomTabInset + Spacing.four,
   },
-
-  // Cards
   card: {
     backgroundColor: Palette.card,
     borderRadius: BorderRadius.xl,
@@ -39,8 +33,6 @@ export const CommonStyles = StyleSheet.create({
     borderWidth: 1,
     borderColor: Palette.border,
   },
-
-  // Inputs
   inputContainer: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -75,8 +67,6 @@ export const CommonStyles = StyleSheet.create({
     marginLeft: 2,
     fontWeight: FontWeight.medium,
   },
-
-  // Buttons
   buttonPrimary: {
     backgroundColor: Palette.primary,
     height: 48,
@@ -97,7 +87,6 @@ export const CommonStyles = StyleSheet.create({
     fontWeight: FontWeight.bold,
     color: Palette.white,
   },
-
   buttonSecondary: {
     backgroundColor: Palette.card,
     height: 48,
@@ -117,7 +106,6 @@ export const CommonStyles = StyleSheet.create({
     fontWeight: FontWeight.semibold,
     color: Palette.dark,
   },
-
   buttonDanger: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -138,8 +126,6 @@ export const CommonStyles = StyleSheet.create({
     fontWeight: FontWeight.semibold,
     color: Palette.danger,
   },
-
-  // Dividers & Layout helpers
   divider: {
     height: 1,
     backgroundColor: Palette.muted,

@@ -106,7 +106,6 @@ export default function ProfileScreen() {
         <ScrollView
           showsVerticalScrollIndicator={false}
           contentContainerStyle={CommonStyles.scrollContent}>
-          {/* Header */}
           <View style={styles.headerContainer}>
             <ThemedText style={styles.headerTitle}>Profile</ThemedText>
             <ThemedText style={styles.headerSubtitle} themeColor="textSecondary">
@@ -114,7 +113,6 @@ export default function ProfileScreen() {
             </ThemedText>
           </View>
 
-          {/* Profile Card */}
           <Pressable
             style={({ pressed }) => [styles.card, pressed && CommonStyles.pressed]}
             onPress={() => router.push('/edit-profile')}>
@@ -143,7 +141,6 @@ export default function ProfileScreen() {
             </View>
           </Pressable>
 
-          {/* Menu Card */}
           <View style={styles.menuCard}>
             {menuItems.map((item, idx) => (
               <View key={item.id}>
@@ -176,7 +173,6 @@ export default function ProfileScreen() {
             ))}
           </View>
 
-          {/* Logout Section */}
           <View style={styles.sectionContainer}>
             <Pressable
               style={({ pressed }) => [

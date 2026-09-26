@@ -16,9 +16,7 @@ export function GluestackUIProvider({
   useEffect(() => {
     try {
       Appearance.setColorScheme((mode === 'system' ? undefined : mode) as ColorSchemeName);
-    } catch {
-      // Ignore if native appearance module is unavailable
-    }
+    } catch {}
   }, [mode]);
 
   return (

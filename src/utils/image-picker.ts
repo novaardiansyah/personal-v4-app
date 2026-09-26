@@ -16,9 +16,6 @@ function formatErrorMessage(error: any, fallbackTitle: string): string {
   return msg || fallbackTitle;
 }
 
-/**
- * Open file/image picker from Gallery across Web and Native.
- */
 export async function pickImageFromGallery(): Promise<PickedImageResult> {
   if (Platform.OS === 'web' && typeof document !== 'undefined') {
     return new Promise((resolve) => {
@@ -89,9 +86,6 @@ export async function pickImageFromGallery(): Promise<PickedImageResult> {
   }
 }
 
-/**
- * Open camera to take a photo across Web and Native.
- */
 export async function pickImageFromCamera(): Promise<PickedImageResult> {
   if (Platform.OS === 'web' && typeof document !== 'undefined') {
     return new Promise((resolve) => {
