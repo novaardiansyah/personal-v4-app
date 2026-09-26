@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   ActivityIndicator,
   KeyboardAvoidingView,
@@ -12,7 +12,6 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
-import Svg, { Circle, Path, Rect } from 'react-native-svg';
 
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
@@ -28,64 +27,27 @@ import {
 } from '@/constants/theme';
 import { useAuth } from '@/context/auth-context';
 import { loginMobileApi } from '@/services/api';
-
-// --- Vector Icons ---
-function MailIcon({ color = Palette.secondary, size = 20 }: { color?: string; size?: number }) {
-  return (
-    <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
-      <Rect x="2" y="4" width="20" height="16" rx="2" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-      <Path d="M22 7L12 13L2 7" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-    </Svg>
-  );
-}
-
-function LockIcon({ color = Palette.secondary, size = 20 }: { color?: string; size?: number }) {
-  return (
-    <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
-      <Rect x="3" y="11" width="18" height="11" rx="2" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-      <Path d="M7 11V7a5 5 0 0 1 10 0v4" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-    </Svg>
-  );
-}
-
-function EyeIcon({ visible, color = Palette.secondary, size = 20 }: { visible: boolean; color?: string; size?: number }) {
-  if (visible) {
-    return (
-      <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
-        <Path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-        <Circle cx="12" cy="12" r="3" stroke={color} strokeWidth="2" />
-      </Svg>
-    );
-  }
-  return (
-    <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
-      <Path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-      <Path d="M1 1l22 22" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-    </Svg>
-  );
-}
-
-function CheckIcon({ color = Palette.white, size = 12 }: { color?: string; size?: number }) {
-  return (
-    <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
-      <Path d="M20 6L9 17L4 12" stroke={color} strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
-    </Svg>
-  );
-}
+import { CheckIcon, MailIcon } from '@/components/icons';
+import { PasswordInput } from '@/components/auth/password-input';
 
 export default function LoginScreen() {
   const router = useRouter();
-  const { login } = useAuth();
+  const { login, isAuthenticated, isLoading: isAuthLoading } = useAuth();
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [showPassword, setShowPassword] = useState(false);
   const [rememberMe, setRememberMe] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
   const [fieldErrors, setFieldErrors] = useState<{ email?: string; password?: string }>({});
   const [generalError, setGeneralError] = useState('');
   const [emailFocused, setEmailFocused] = useState(false);
-  const [passwordFocused, setPasswordFocused] = useState(false);
+
+  // Jika sudah login, cegah akses login dan arahkan langsung ke Beranda
+  useEffect(() => {
+    if (!isAuthLoading && isAuthenticated) {
+      router.replace('/');
+    }
+  }, [isAuthenticated, isAuthLoading, router]);
 
   const handleLogin = async () => {
     setGeneralError('');
@@ -139,12 +101,17 @@ export default function LoginScreen() {
       }
 
       if (res.data) {
-        login({
-          id: res.data.user.id,
-          name: res.data.user.name,
-          email: res.data.user.email,
-          token: res.data.token,
-        });
+        await login(
+          {
+            id: res.data.user.id,
+            name: res.data.user.name,
+            email: res.data.user.email,
+            avatar_url: res.data.user.avatar_url,
+            token: res.data.token,
+            expires_at: res.data.expires_at,
+          },
+          res.data.expires_at
+        );
         router.replace('/');
       }
     } catch {
@@ -216,43 +183,17 @@ export default function LoginScreen() {
               </View>
 
               {/* Password Input */}
-              <View style={styles.inputGroup}>
-                <ThemedText style={CommonStyles.inputLabel}>Kata Sandi</ThemedText>
-                <View
-                  style={[
-                    CommonStyles.inputContainer,
-                    passwordFocused && CommonStyles.inputContainerFocused,
-                    Boolean(fieldErrors.password) && CommonStyles.inputContainerError,
-                  ]}>
-                  <View style={styles.inputIcon}>
-                    <LockIcon color={fieldErrors.password ? Palette.danger : passwordFocused ? Palette.primary : Palette.secondary} />
-                  </View>
-                  <TextInput
-                    style={styles.textInput}
-                    placeholder="Masukkan kata sandi"
-                    placeholderTextColor={Palette.textMuted}
-                    value={password}
-                    onChangeText={(text) => {
-                      setPassword(text);
-                      if (fieldErrors.password) setFieldErrors((prev) => ({ ...prev, password: undefined }));
-                      if (generalError) setGeneralError('');
-                    }}
-                    secureTextEntry={!showPassword}
-                    autoCapitalize="none"
-                    onFocus={() => setPasswordFocused(true)}
-                    onBlur={() => setPasswordFocused(false)}
-                  />
-                  <Pressable
-                    onPress={() => setShowPassword(!showPassword)}
-                    style={styles.eyeButton}
-                    hitSlop={8}>
-                    <EyeIcon visible={showPassword} color={Palette.secondary} />
-                  </Pressable>
-                </View>
-                {fieldErrors.password ? (
-                  <ThemedText style={CommonStyles.fieldErrorText}>{fieldErrors.password}</ThemedText>
-                ) : null}
-              </View>
+              <PasswordInput
+                label="Kata Sandi"
+                placeholder="Masukkan kata sandi"
+                value={password}
+                onChangeText={(text) => {
+                  setPassword(text);
+                  if (fieldErrors.password) setFieldErrors((prev) => ({ ...prev, password: undefined }));
+                  if (generalError) setGeneralError('');
+                }}
+                error={fieldErrors.password}
+              />
 
               {/* Remember Me & Forgot Password */}
               <View style={CommonStyles.rowBetween}>
@@ -378,9 +319,6 @@ const styles = StyleSheet.create({
     height: '100%',
     paddingVertical: 0,
   },
-  eyeButton: {
-    padding: 6,
-  },
   checkboxRow: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -426,4 +364,3 @@ const styles = StyleSheet.create({
     color: Palette.primary,
   },
 });
-

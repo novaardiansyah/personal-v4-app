@@ -2,20 +2,17 @@ import React, { useCallback, useEffect, useRef, useState } from 'react';
 import {
   ActivityIndicator,
   KeyboardAvoidingView,
-  Modal,
   Platform,
   Pressable,
   ScrollView,
   StyleSheet,
   Text,
   TextInput,
-  TouchableWithoutFeedback,
   View,
 } from 'react-native';
-import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { useFocusEffect, useRouter } from 'expo-router';
 import { Image } from 'expo-image';
-import Svg, { Circle, Path, Rect } from 'react-native-svg';
 
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
@@ -26,7 +23,6 @@ import {
   FontWeight,
   Fonts,
   Palette,
-  Shadows,
   Spacing,
 } from '@/constants/theme';
 import { useAuth } from '@/context/auth-context';
@@ -36,101 +32,19 @@ import {
   updateProfileMobileApi,
 } from '@/services/api';
 import { pickImageFromCamera, pickImageFromGallery } from '@/utils/image-picker';
-
-// --- Vector Icons ---
-function ArrowLeftIcon({ color = Palette.dark, size = 20 }: { color?: string; size?: number }) {
-  return (
-    <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
-      <Path d="M19 12H5" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-      <Path d="M12 19l-7-7 7-7" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-    </Svg>
-  );
-}
-
-function CameraIcon({ color = Palette.white, size = 16 }: { color?: string; size?: number }) {
-  return (
-    <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
-      <Path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-      <Circle cx="12" cy="13" r="4" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-    </Svg>
-  );
-}
-
-function ImageIcon({ color = Palette.primary, size = 20 }: { color?: string; size?: number }) {
-  return (
-    <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
-      <Rect x="3" y="3" width="18" height="18" rx="2" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-      <Circle cx="8.5" cy="8.5" r="1.5" fill={color} />
-      <Path d="M21 15l-5-5L5 21" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-    </Svg>
-  );
-}
-
-function UserIcon({ color = Palette.secondary, size = 20 }: { color?: string; size?: number }) {
-  return (
-    <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
-      <Path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-      <Circle cx="12" cy="7" r="4" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-    </Svg>
-  );
-}
-
-function MailIcon({ color = Palette.secondary, size = 20 }: { color?: string; size?: number }) {
-  return (
-    <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
-      <Rect x="2" y="4" width="20" height="16" rx="2" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-      <Path d="M22 7L12 13L2 7" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-    </Svg>
-  );
-}
-
-function LockIcon({ color = Palette.secondary, size = 18 }: { color?: string; size?: number }) {
-  return (
-    <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
-      <Rect x="3" y="11" width="18" height="11" rx="2" ry="2" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-      <Path d="M7 11V7a5 5 0 0 1 10 0v4" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-    </Svg>
-  );
-}
-
-function EyeIcon({ visible, size = 18, color = Palette.secondary }: { visible: boolean; size?: number; color?: string }) {
-  if (visible) {
-    return (
-      <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
-        <Path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-        <Circle cx="12" cy="12" r="3" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-      </Svg>
-    );
-  }
-  return (
-    <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
-      <Path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-      <Path d="M1 1l22 22" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-    </Svg>
-  );
-}
-
-function TrashIcon({ color = Palette.danger, size = 18 }: { color?: string; size?: number }) {
-  return (
-    <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
-      <Path d="M3 6h18" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-      <Path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-    </Svg>
-  );
-}
-
-function KeyIcon({ color = Palette.primary, size = 20 }: { color?: string; size?: number }) {
-  return (
-    <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
-      <Circle cx="7.5" cy="15.5" r="5.5" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-      <Path d="M11.4 11.6L21 2M16 7l2 2M19 4l2 2" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-    </Svg>
-  );
-}
+import {
+  ArrowLeftIcon,
+  CameraIcon,
+  KeyIcon,
+  LockIcon,
+  MailIcon,
+  UserIcon,
+} from '@/components/icons';
+import { AvatarPickerModal } from '@/components/profile/avatar-picker-modal';
+import { PasswordInput } from '@/components/auth/password-input';
 
 export default function EditProfileScreen() {
   const router = useRouter();
-  const insets = useSafeAreaInsets();
   const { user, updateUser, isAuthenticated } = useAuth();
   const navigateTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -156,14 +70,6 @@ export default function EditProfileScreen() {
   const [currentPassword, setCurrentPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
-
-  const [showCurrentPassword, setShowCurrentPassword] = useState(false);
-  const [showNewPassword, setShowNewPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-
-  const [currentPasswordFocused, setCurrentPasswordFocused] = useState(false);
-  const [newPasswordFocused, setNewPasswordFocused] = useState(false);
-  const [confirmPasswordFocused, setConfirmPasswordFocused] = useState(false);
 
   const [isChangingPassword, setIsChangingPassword] = useState(false);
   const [passwordErrors, setPasswordErrors] = useState<{
@@ -324,7 +230,7 @@ export default function EditProfileScreen() {
       }
 
       if (res.data?.user) {
-        updateUser({
+        await updateUser({
           name: res.data.user.name,
           email: res.data.user.email,
           avatar_url: res.data.user.avatar_url,
@@ -407,11 +313,12 @@ export default function EditProfileScreen() {
       }
 
       if (res.data?.token) {
-        updateUser({
+        await updateUser({
           token: res.data.token,
           name: res.data.user?.name,
           email: res.data.user?.email,
           avatar_url: res.data.user?.avatar_url,
+          expires_at: res.data.expires_at,
         });
       }
 
@@ -596,118 +503,46 @@ export default function EditProfileScreen() {
               ) : null}
 
               {/* Current Password */}
-              <View style={styles.inputGroup}>
-                <ThemedText style={CommonStyles.inputLabel}>Kata Sandi Saat Ini</ThemedText>
-                <View
-                  style={[
-                    CommonStyles.inputContainer,
-                    currentPasswordFocused && CommonStyles.inputContainerFocused,
-                    Boolean(passwordErrors.current_password) && CommonStyles.inputContainerError,
-                  ]}>
-                  <View style={styles.inputIcon}>
-                    <LockIcon color={passwordErrors.current_password ? Palette.danger : currentPasswordFocused ? Palette.primary : Palette.secondary} />
-                  </View>
-                  <TextInput
-                    style={styles.textInput}
-                    placeholder="Masukkan kata sandi saat ini"
-                    placeholderTextColor={Palette.textMuted}
-                    value={currentPassword}
-                    onChangeText={(text) => {
-                      setCurrentPassword(text);
-                      if (passwordErrors.current_password) setPasswordErrors((prev) => ({ ...prev, current_password: undefined }));
-                      if (passwordGeneralError) setPasswordGeneralError('');
-                    }}
-                    secureTextEntry={!showCurrentPassword}
-                    autoCapitalize="none"
-                    onFocus={() => setCurrentPasswordFocused(true)}
-                    onBlur={() => setCurrentPasswordFocused(false)}
-                  />
-                  <Pressable
-                    style={styles.eyeButton}
-                    onPress={() => setShowCurrentPassword(!showCurrentPassword)}>
-                    <EyeIcon visible={showCurrentPassword} size={18} color={Palette.secondary} />
-                  </Pressable>
-                </View>
-                {passwordErrors.current_password ? (
-                  <ThemedText style={CommonStyles.fieldErrorText}>{passwordErrors.current_password}</ThemedText>
-                ) : null}
-              </View>
+              <PasswordInput
+                label="Kata Sandi Saat Ini"
+                placeholder="Masukkan kata sandi saat ini"
+                value={currentPassword}
+                onChangeText={(text) => {
+                  setCurrentPassword(text);
+                  if (passwordErrors.current_password)
+                    setPasswordErrors((prev) => ({ ...prev, current_password: undefined }));
+                  if (passwordGeneralError) setPasswordGeneralError('');
+                }}
+                error={passwordErrors.current_password}
+              />
 
               {/* New Password */}
-              <View style={styles.inputGroup}>
-                <ThemedText style={CommonStyles.inputLabel}>Kata Sandi Baru</ThemedText>
-                <View
-                  style={[
-                    CommonStyles.inputContainer,
-                    newPasswordFocused && CommonStyles.inputContainerFocused,
-                    Boolean(passwordErrors.new_password) && CommonStyles.inputContainerError,
-                  ]}>
-                  <View style={styles.inputIcon}>
-                    <LockIcon color={passwordErrors.new_password ? Palette.danger : newPasswordFocused ? Palette.primary : Palette.secondary} />
-                  </View>
-                  <TextInput
-                    style={styles.textInput}
-                    placeholder="Minimal 6 karakter"
-                    placeholderTextColor={Palette.textMuted}
-                    value={newPassword}
-                    onChangeText={(text) => {
-                      setNewPassword(text);
-                      if (passwordErrors.new_password) setPasswordErrors((prev) => ({ ...prev, new_password: undefined }));
-                      if (passwordGeneralError) setPasswordGeneralError('');
-                    }}
-                    secureTextEntry={!showNewPassword}
-                    autoCapitalize="none"
-                    onFocus={() => setNewPasswordFocused(true)}
-                    onBlur={() => setNewPasswordFocused(false)}
-                  />
-                  <Pressable
-                    style={styles.eyeButton}
-                    onPress={() => setShowNewPassword(!showNewPassword)}>
-                    <EyeIcon visible={showNewPassword} size={18} color={Palette.secondary} />
-                  </Pressable>
-                </View>
-                {passwordErrors.new_password ? (
-                  <ThemedText style={CommonStyles.fieldErrorText}>{passwordErrors.new_password}</ThemedText>
-                ) : null}
-              </View>
+              <PasswordInput
+                label="Kata Sandi Baru"
+                placeholder="Minimal 6 karakter"
+                value={newPassword}
+                onChangeText={(text) => {
+                  setNewPassword(text);
+                  if (passwordErrors.new_password)
+                    setPasswordErrors((prev) => ({ ...prev, new_password: undefined }));
+                  if (passwordGeneralError) setPasswordGeneralError('');
+                }}
+                error={passwordErrors.new_password}
+              />
 
               {/* Confirm New Password */}
-              <View style={styles.inputGroup}>
-                <ThemedText style={CommonStyles.inputLabel}>Konfirmasi Kata Sandi Baru</ThemedText>
-                <View
-                  style={[
-                    CommonStyles.inputContainer,
-                    confirmPasswordFocused && CommonStyles.inputContainerFocused,
-                    Boolean(passwordErrors.new_password_confirmation) && CommonStyles.inputContainerError,
-                  ]}>
-                  <View style={styles.inputIcon}>
-                    <LockIcon color={passwordErrors.new_password_confirmation ? Palette.danger : confirmPasswordFocused ? Palette.primary : Palette.secondary} />
-                  </View>
-                  <TextInput
-                    style={styles.textInput}
-                    placeholder="Ulangi kata sandi baru"
-                    placeholderTextColor={Palette.textMuted}
-                    value={confirmPassword}
-                    onChangeText={(text) => {
-                      setConfirmPassword(text);
-                      if (passwordErrors.new_password_confirmation) setPasswordErrors((prev) => ({ ...prev, new_password_confirmation: undefined }));
-                      if (passwordGeneralError) setPasswordGeneralError('');
-                    }}
-                    secureTextEntry={!showConfirmPassword}
-                    autoCapitalize="none"
-                    onFocus={() => setConfirmPasswordFocused(true)}
-                    onBlur={() => setConfirmPasswordFocused(false)}
-                  />
-                  <Pressable
-                    style={styles.eyeButton}
-                    onPress={() => setShowConfirmPassword(!showConfirmPassword)}>
-                    <EyeIcon visible={showConfirmPassword} size={18} color={Palette.secondary} />
-                  </Pressable>
-                </View>
-                {passwordErrors.new_password_confirmation ? (
-                  <ThemedText style={CommonStyles.fieldErrorText}>{passwordErrors.new_password_confirmation}</ThemedText>
-                ) : null}
-              </View>
+              <PasswordInput
+                label="Konfirmasi Kata Sandi Baru"
+                placeholder="Ulangi kata sandi baru"
+                value={confirmPassword}
+                onChangeText={(text) => {
+                  setConfirmPassword(text);
+                  if (passwordErrors.new_password_confirmation)
+                    setPasswordErrors((prev) => ({ ...prev, new_password_confirmation: undefined }));
+                  if (passwordGeneralError) setPasswordGeneralError('');
+                }}
+                error={passwordErrors.new_password_confirmation}
+              />
 
               {/* Change Password Button */}
               <Pressable
@@ -730,84 +565,14 @@ export default function EditProfileScreen() {
         </KeyboardAvoidingView>
 
         {/* Modal Bottom Sheet untuk Aksi Avatar */}
-        <Modal
+        <AvatarPickerModal
           visible={isAvatarModalVisible}
-          transparent={true}
-          animationType="fade"
-          onRequestClose={() => setIsAvatarModalVisible(false)}>
-          <TouchableWithoutFeedback onPress={() => setIsAvatarModalVisible(false)}>
-            <View style={styles.modalOverlay}>
-              <TouchableWithoutFeedback>
-                <View
-                  style={[
-                    styles.modalContent,
-                    {
-                      paddingBottom: Math.max(insets.bottom, 24) + 20,
-                    },
-                  ]}>
-                  {/* Modal Header */}
-                  <View style={styles.modalHeader}>
-                    <View style={styles.modalHandle} />
-                    <ThemedText style={styles.modalTitle}>Foto Profil</ThemedText>
-                    <ThemedText style={styles.modalSubtitle}>
-                      Pilih sumber foto untuk memperbarui foto profil Anda
-                    </ThemedText>
-                  </View>
-
-                  {/* Options List */}
-                  <View style={styles.modalOptions}>
-                    <Pressable
-                      style={({ pressed }) => [styles.modalOptionItem, pressed && CommonStyles.pressed]}
-                      onPress={handlePickCamera}>
-                      <View style={[styles.modalOptionIcon, { backgroundColor: Palette.primaryLight }]}>
-                        <CameraIcon size={20} color={Palette.primary} />
-                      </View>
-                      <View style={styles.modalOptionTextWrapper}>
-                        <ThemedText style={styles.modalOptionTitle}>Ambil Foto (Kamera)</ThemedText>
-                        <ThemedText style={styles.modalOptionDesc}>Gunakan kamera untuk mengambil foto baru</ThemedText>
-                      </View>
-                    </Pressable>
-
-                    <Pressable
-                      style={({ pressed }) => [styles.modalOptionItem, pressed && CommonStyles.pressed]}
-                      onPress={handlePickGallery}>
-                      <View style={[styles.modalOptionIcon, { backgroundColor: Palette.primaryLight }]}>
-                        <ImageIcon size={20} color={Palette.primary} />
-                      </View>
-                      <View style={styles.modalOptionTextWrapper}>
-                        <ThemedText style={styles.modalOptionTitle}>Pilih dari Galeri</ThemedText>
-                        <ThemedText style={styles.modalOptionDesc}>Pilih gambar yang sudah ada di penyimpanan</ThemedText>
-                      </View>
-                    </Pressable>
-
-                    {avatarPreview ? (
-                      <Pressable
-                        style={({ pressed }) => [styles.modalOptionItem, pressed && CommonStyles.pressed]}
-                        onPress={handleRemoveAvatar}>
-                        <View style={[styles.modalOptionIcon, { backgroundColor: Palette.dangerBg }]}>
-                          <TrashIcon size={20} color={Palette.danger} />
-                        </View>
-                        <View style={styles.modalOptionTextWrapper}>
-                          <ThemedText style={[styles.modalOptionTitle, { color: Palette.danger }]}>
-                            Hapus Foto Profil
-                          </ThemedText>
-                          <ThemedText style={styles.modalOptionDesc}>Kembalikan foto profil ke inisial nama</ThemedText>
-                        </View>
-                      </Pressable>
-                    ) : null}
-                  </View>
-
-                  {/* Cancel Button */}
-                  <Pressable
-                    style={({ pressed }) => [styles.modalCancelBtn, pressed && CommonStyles.pressed]}
-                    onPress={() => setIsAvatarModalVisible(false)}>
-                    <ThemedText style={styles.modalCancelText}>Batal</ThemedText>
-                  </Pressable>
-                </View>
-              </TouchableWithoutFeedback>
-            </View>
-          </TouchableWithoutFeedback>
-        </Modal>
+          avatarPreview={avatarPreview}
+          onClose={() => setIsAvatarModalVisible(false)}
+          onPickCamera={handlePickCamera}
+          onPickGallery={handlePickGallery}
+          onRemoveAvatar={handleRemoveAvatar}
+        />
       </SafeAreaView>
     </ThemedView>
   );
@@ -847,7 +612,6 @@ const styles = StyleSheet.create({
   },
   placeholderButton: {
     width: 40,
-    height: 40,
   },
   errorBanner: {
     backgroundColor: Palette.dangerBg,
@@ -880,65 +644,67 @@ const styles = StyleSheet.create({
     fontWeight: FontWeight.semibold,
   },
   avatarCard: {
+    alignItems: 'center',
+    justifyContent: 'center',
     backgroundColor: Palette.card,
     borderRadius: BorderRadius.xl,
     padding: Spacing.four,
     borderWidth: 1,
     borderColor: Palette.border,
-    alignItems: 'center',
     marginBottom: Spacing.three,
-    ...Shadows.sm,
+    gap: 12,
   },
   avatarWrapper: {
     position: 'relative',
-    marginBottom: Spacing.two,
+    width: 90,
+    height: 90,
   },
   avatarImage: {
-    width: 96,
-    height: 96,
-    borderRadius: 48,
+    width: 90,
+    height: 90,
+    borderRadius: BorderRadius.full,
     borderWidth: 2,
-    borderColor: Palette.primary,
+    borderColor: Palette.border,
   },
   avatarPlaceholder: {
-    width: 96,
-    height: 96,
-    borderRadius: 48,
+    width: 90,
+    height: 90,
+    borderRadius: BorderRadius.full,
     backgroundColor: Palette.primary,
     alignItems: 'center',
     justifyContent: 'center',
   },
   avatarText: {
-    color: Palette.white,
+    fontFamily: Fonts.sans,
     fontSize: FontSize['3xl'],
     fontWeight: FontWeight.bold,
+    color: Palette.white,
   },
   cameraBadge: {
     position: 'absolute',
     bottom: 0,
     right: 0,
-    width: 32,
-    height: 32,
-    borderRadius: 16,
     backgroundColor: Palette.primary,
-    borderWidth: 2,
-    borderColor: Palette.white,
+    width: 28,
+    height: 28,
+    borderRadius: BorderRadius.full,
     alignItems: 'center',
     justifyContent: 'center',
+    borderWidth: 2,
+    borderColor: Palette.white,
   },
   changeAvatarBtn: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 6,
-    backgroundColor: Palette.primaryLight,
     paddingHorizontal: 14,
-    paddingVertical: 8,
+    paddingVertical: 7,
     borderRadius: BorderRadius.full,
-    marginTop: 4,
+    backgroundColor: Palette.primaryLight,
   },
   changeAvatarBtnText: {
     fontFamily: Fonts.sans,
-    fontSize: FontSize.xs + 1,
+    fontSize: FontSize.xs + 0.5,
     fontWeight: FontWeight.semibold,
     color: Palette.primary,
   },
@@ -948,30 +714,28 @@ const styles = StyleSheet.create({
     padding: Spacing.four,
     borderWidth: 1,
     borderColor: Palette.border,
-    gap: 16,
     marginBottom: Spacing.three,
-    ...Shadows.sm,
+    gap: 14,
   },
   passwordCard: {
-    borderColor: Palette.border,
+    marginTop: 4,
   },
   cardHeaderRow: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 8,
-    marginBottom: -4,
   },
   cardHeaderIcon: {
-    width: 30,
-    height: 30,
-    borderRadius: BorderRadius.sm,
+    width: 32,
+    height: 32,
+    borderRadius: BorderRadius.md,
     backgroundColor: Palette.primaryLight,
     alignItems: 'center',
     justifyContent: 'center',
   },
   sectionTitle: {
     fontFamily: Fonts.sans,
-    fontSize: FontSize.md,
+    fontSize: FontSize.base,
     fontWeight: FontWeight.bold,
     color: Palette.dark,
   },
@@ -980,17 +744,14 @@ const styles = StyleSheet.create({
   },
   labelRow: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
     alignItems: 'center',
+    justifyContent: 'space-between',
   },
   disabledBadge: {
     fontFamily: Fonts.sans,
     fontSize: FontSize.xs,
     color: Palette.secondary,
-    backgroundColor: Palette.muted,
-    paddingHorizontal: 8,
-    paddingVertical: 2,
-    borderRadius: BorderRadius.sm,
+    fontStyle: 'italic',
   },
   inputIcon: {
     marginRight: 10,
@@ -999,6 +760,14 @@ const styles = StyleSheet.create({
     backgroundColor: '#ECEEF2',
     borderColor: '#D1D5DB',
   },
+  textInput: {
+    flex: 1,
+    fontFamily: Fonts.sans,
+    fontSize: FontSize.base,
+    color: Palette.dark,
+    height: '100%',
+    paddingVertical: 0,
+  },
   textInputDisabled: {
     color: '#6B7280',
     fontWeight: FontWeight.medium,
@@ -1006,106 +775,12 @@ const styles = StyleSheet.create({
   lockIconBadge: {
     paddingLeft: 6,
   },
-  eyeButton: {
-    padding: 6,
-    marginLeft: 4,
-  },
   saveButton: {
-    marginTop: Spacing.two,
+    marginTop: 6,
   },
   passwordButton: {
-    backgroundColor: Palette.dark,
-    marginTop: Spacing.two,
-  },
-
-  /* Modal Bottom Sheet Styles */
-  modalOverlay: {
-    flex: 1,
-    backgroundColor: 'rgba(0, 0, 0, 0.45)',
-    justifyContent: 'flex-end',
-  },
-  modalContent: {
-    backgroundColor: Palette.card,
-    borderTopLeftRadius: BorderRadius['2xl'],
-    borderTopRightRadius: BorderRadius['2xl'],
-    paddingHorizontal: Spacing.four,
-    paddingTop: Spacing.two + 4,
-    paddingBottom: Platform.OS === 'ios' ? Spacing.six : Spacing.four,
-    gap: 16,
-  },
-  modalHeader: {
-    alignItems: 'center',
-    gap: 4,
-  },
-  modalHandle: {
-    width: 38,
-    height: 4,
-    borderRadius: 2,
-    backgroundColor: Palette.border,
-    marginBottom: 8,
-  },
-  modalTitle: {
-    fontFamily: Fonts.sans,
-    fontSize: FontSize.lg,
-    fontWeight: FontWeight.bold,
-    color: Palette.dark,
-  },
-  modalSubtitle: {
-    fontFamily: Fonts.sans,
-    fontSize: FontSize.xs + 1,
-    color: Palette.secondary,
-    textAlign: 'center',
-  },
-  modalOptions: {
-    gap: 10,
-    marginTop: 4,
-  },
-  modalOptionItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 14,
-    paddingVertical: 12,
-    paddingHorizontal: 12,
-    borderRadius: BorderRadius.lg,
-    backgroundColor: '#F9FAFB',
-    borderWidth: 1,
-    borderColor: Palette.border,
-  },
-  modalOptionIcon: {
-    width: 42,
-    height: 42,
-    borderRadius: 21,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  modalOptionTextWrapper: {
-    flex: 1,
-    gap: 2,
-  },
-  modalOptionTitle: {
-    fontFamily: Fonts.sans,
-    fontSize: FontSize.sm + 1,
-    fontWeight: FontWeight.semibold,
-    color: Palette.dark,
-  },
-  modalOptionDesc: {
-    fontFamily: Fonts.sans,
-    fontSize: FontSize.xs,
-    color: Palette.secondary,
-  },
-  modalCancelBtn: {
-    backgroundColor: Palette.muted,
-    paddingVertical: 14,
-    borderRadius: BorderRadius.lg,
-    alignItems: 'center',
-    justifyContent: 'center',
     marginTop: 6,
-    marginBottom: Platform.OS === 'android' ? 10 : 0,
-  },
-  modalCancelText: {
-    fontFamily: Fonts.sans,
-    fontSize: FontSize.sm + 1,
-    fontWeight: FontWeight.semibold,
-    color: Palette.secondary,
+    backgroundColor: Palette.primary,
+    borderColor: Palette.primary,
   },
 });

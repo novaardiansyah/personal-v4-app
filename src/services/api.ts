@@ -17,6 +17,7 @@ export interface AuthUserData {
 export interface AuthResponseData {
   token: string;
   user: AuthUserData;
+  expires_at?: string;
 }
 
 async function request<T>(
@@ -145,12 +146,23 @@ export async function changePasswordMobileApi(
     new_password_confirmation: string;
   },
   token?: string | null
-): Promise<ApiResponse<{ token?: string; user?: AuthUserData }>> {
-  return request<{ token?: string; user?: AuthUserData }>('auth/change-password', {
+): Promise<ApiResponse<{ token?: string; user?: AuthUserData; expires_at?: string }>> {
+  return request<{ token?: string; user?: AuthUserData; expires_at?: string }>('auth/change-password', {
     method: 'POST',
     body: payload,
     token,
   });
 }
+
+/**
+ * Endpoint Logout Mobile
+ */
+export async function logoutMobileApi(token?: string | null): Promise<ApiResponse<null>> {
+  return request<null>('auth/logout', {
+    method: 'POST',
+    token,
+  });
+}
+
 
 
